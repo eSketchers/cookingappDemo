@@ -1,0 +1,357 @@
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet"/>
+    <style media="all" type="text/css">
+        @font-face {
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Open Sans'), local('Open Sans'), url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+        }
+
+        .ReadMsgBody {
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        .ExternalClass {
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+            line-height: 100%;
+        }
+
+        html {
+            width: 100%;
+        }
+
+        body {
+            -webkit-text-size-adjust: none;
+            -ms-text-size-adjust: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            border-spacing: 0;
+            table-layout: fixed;
+            margin: 0 auto;
+        }
+
+        table table table {
+            table-layout: auto;
+        }
+
+        .yshortcuts a {
+            border-bottom: none !important;
+        }
+
+        img:hover {
+            opacity: 0.9 !important;
+        }
+
+        a {
+            color: #91c444;
+            text-decoration: none;
+        }
+
+        .textbutton a {
+            font-family: 'open sans', arial, sans-serif !important;
+        }
+
+        .btn-link a {
+            color: #FFFFFF !important;
+        }
+
+        @media only screen and (max-width: 640px) {
+            body {
+                width: auto !important;
+            }
+
+            /* image */
+            img[class="img1"] {
+                width: 100% !important;
+                height: auto !important;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            body {
+                width: auto !important;
+            }
+
+            /* image */
+            img[class="img1"] {
+                width: 100% !important;
+            }
+        }
+    </style>
+    <!--[if gte mso 9]> <style type="text/css">body, table, tr, td, p, span, a, h1, h2, h3, h4, h5, h6, ul, li, ol, dl, dd, dt {font-family: Arial, sans-serif !important;} </style>
+    <![endif]-->
+
+</head>
+<body style="margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;"
+      offset="0" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+{#<table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#eceff3" align="center">#}
+{#    <tbody>#}
+{#    <tr>#}
+{#        <td height="25"></td>#}
+{#    </tr>#}
+{#    <tr>#}
+{#        <td align="center">#}
+{#            <table cellspacing="0" cellpadding="0" border="0" align="center">#}
+{#                <tbody>#}
+{#                <tr>#}
+{#                    <td width="600" align="center">#}
+{#                        <table style=" padding-bottom:2px; background-position:top; background-size:cover;border-top-left-radius:6px;border-top-right-radius:6px;"#}
+{#                               width="94%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" align="center">#}
+{#                            <tbody>#}
+{#                            <tr>#}
+{#                                <td align="center">#}
+{#                                    <table width="90%" cellspacing="0" cellpadding="0" border="0" align="center">#}
+{#                                        <tbody>#}
+{#                                        <tr>#}
+{#                                            <td height="35"></td>#}
+{#                                        </tr>#}
+{#                                        <tr>#}
+{#                                            <td style="line-height: 0px; " align="center">#}
+{#                                                <table width="200" cellspacing="0" cellpadding="0" border="0"#}
+{#                                                       align="center">#}
+{#                                                    <tbody>#}
+{#                                                    <!--Header Logo-->#}
+{#                                                    <tr>#}
+{#                                                        <td style="line-height: 0px;" align="center"><a#}
+{#                                                                href="http://essence.earth/" target="_blank"><img#}
+{#                                                                src="{% static 'site/images/essence_earth_black.png' %}" alt="img"#}
+{#                                                                style="display:block; line-height:0px; font-size:0px; border:0px;"#}
+{#                                                                width="200" height="51"></a></td>#}
+{#                                                    </tr>#}
+{#                                                    </tbody>#}
+{#                                                </table>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        <!--end title-->#}
+{##}
+{#                                        <tr>#}
+{#                                            <td height="20" style="border-bottom:1px solid #DBDBDB;"></td>#}
+{#                                        </tr>#}
+{#                                        </tbody>#}
+{#                                    </table>#}
+{#                                </td>#}
+{#                            </tr>#}
+{#                            </tbody>#}
+{#                        </table>#}
+{#                    </td>#}
+{#                </tr>#}
+{#                </tbody>#}
+{#            </table>#}
+{#        </td>#}
+{#    </tr>#}
+{#    </tbody>#}
+{#</table>#}
+
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#eceff3" align="center">
+    <tbody>
+    <tr>
+        <td align="center">
+            <table cellspacing="0" cellpadding="0" border="0" align="center">
+                <tbody>
+                <tr>
+                    <td width="600" align="center">
+                        <table data-bgcolor="container" width="94%" cellspacing="0" cellpadding="0" border="0"
+                               bgcolor="#FFFFFF" align="center">
+                            <tbody>
+                            <tr>
+                                <td width="570" align="center">
+                                    <table width="90%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                        <!--title-->
+                                        <tbody>
+                                        <tr>
+                                            <td height="25" style="border-top:1px solid #DBDBDB;"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family: 'Open sans', Arial, sans-serif; color:#000000; font-size:18px;font-weight: bold; "
+                                                align="center">{{ title }}
+                                            </td>
+                                        </tr>
+                                        <!--end title-->
+                                        <tr>
+                                            <td align="center">
+                                                <table width="50" cellspacing="0" cellpadding="0" border="0">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td style="border-bottom:2px solid #020202;" height="15"></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="25"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#eceff3" align="center">
+    <tbody>
+    <tr>
+        <td align="center">
+            <table cellspacing="0" cellpadding="0" border="0" align="center">
+                <tbody>
+                <tr>
+                    <td width="600" align="center">
+                        <table data-bgcolor="container" width="94%" cellspacing="0" cellpadding="0" border="0"
+                               bgcolor="#FFFFFF" align="center">
+                            <tbody>
+                            <tr>
+                                <td align="center">
+                                    <table width="90%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                        <!--Content-->
+                                        <tbody>
+                                        <tr>
+                                            <td style="font-family: 'Open sans', Arial, sans-serif; color:#7f8c8d; font-size:14px; line-height: 24px;"
+                                                align="left">
+                                                {% block email_content %}
+                                                    Email Content Here
+                                                {% endblock %}
+                                            </td>
+                                        </tr>
+                                        <!--end Content-->
+                                        <tr>
+                                            <td height="35"></td>
+                                        </tr>
+                                        <!--button-->
+                                        <tr>
+                                            <td style="text-align:center;vertical-align:top;font-size:0;" align="center">
+                                                <table class="textbutton" style="border-radius:6px;" cellspacing="0" cellpadding="0" border="0" bgcolor="#020202" align="center">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="font-family: 'Open sans', Arial, sans-serif; color:#FFFFFF; font-size:14px; padding-left: 25px;padding-right: 25px; letter-spacing:1px;font-weight: bold; " align="center" height="40">
+                                                                {% block action_buttons %}
+                                                                    <a href="http://essence.earth/" style="text-decoration:none; color:#ffffff">
+                                                                        CTA BUTTON TEXT
+                                                                    </a>
+                                                                {% endblock %}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <!--end button-->
+                                        <tr>
+                                            <td height="35"></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-family: 'Open sans', Arial, sans-serif; color:#7f8c8d; font-size:14px; line-height: 24px;" align="left">
+                                                {% block extra_content %}
+                                                    We are En Camp
+                                                {% endblock %}
+                                                {% block signature %}
+                                                    Warm Regards,<br/>
+                                                    <strong>En Camp Team</strong>
+                                                {% endblock %}
+                                            </td>
+                                        </tr>
+                                        <!--end Content-->
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="20"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+{% block footer %}
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#eceff3" align="center">
+        <tbody>
+        <tr>
+            <td align="center">
+                <table cellspacing="0" cellpadding="0" border="0" align="center">
+                    <tbody>
+                    <tr>
+                        <td width="600" align="center">
+                            <table style="border-bottom-left-radius:6px;border-bottom-right-radius:6px; box-shadow:0px 3px 0px #e0e5eb;"
+                                   width="94%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                <tbody>
+                                <tr>
+                                    <td data-bgcolor="container" bgcolor="#FFFFFF" height="20"></td>
+                                </tr>
+                                <tr>
+                                    <td bgcolor="#f3f6fa" align="center">
+                                        <table width="94%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                            <tbody>
+                                            <tr>
+                                                <td height="5"></td>
+                                            </tr>
+                                            <!--preference-->
+                                            <tr>
+                                                <td class="footer-link" style="font-family: 'Open sans', Arial, sans-serif; padding:10px; color:#666666; font-size:11px; line-height:15px;" align="center">
+                                                    This email was intended for {{ user.email }}, because you signed up for
+                                                    <span style="color:#020202; font-weight: bold;">Demo App</span>
+                                                    . The link in this email will always directed to
+                                                    <a href="#" style="text-decoration:none; color:#020202"></a>
+                                                    .<br/>
+                                                    © {% now "Y" %} <span style="color:#020202; font-weight: bold;"></span>,
+                                                    All Rights Reserved.
+                                                </td>
+                                            </tr>
+                                            <!--end preference-->
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table width="90%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                <tbody>
+                                <tr>
+                                    <td height="20"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td height="20"></td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
+</body>
+</html>

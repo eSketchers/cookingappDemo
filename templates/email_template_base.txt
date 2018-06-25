@@ -1,0 +1,7 @@
+{% block email_content %}
+{% endblock %}
+
+{% block signature %}
+    Warm Regards,
+    Drop shipping Team
+{% endblock %}

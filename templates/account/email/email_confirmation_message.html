@@ -1,0 +1,59 @@
+{% extends 'email_template_base.html' %}
+
+{% block email_content %}
+
+    Hi {%  if user.last_name %} {{ user.last_name }} {%  endif %},
+
+    <p>
+        Welcome and thanks for your interest.!
+    </p>
+    <p>
+        Click the link below to verify your email
+    </p>
+{% endblock %}
+
+{% block action_buttons %}
+    <a href="{{ activate_url }}" style="text-decoration:none; color:#ffffff">
+        CONFIRM YOUR EMAIL
+    </a>
+{% endblock %}
+
+{% block extra_content %}
+    <p>
+        If the above link is not clickable, try copying and pasting into the address bar of your web browser.
+    </p>
+    <p>
+        With this one account, you get to keep up to date with all your social and professional activities while getting rewarded!
+    </p>
+    <p>
+        Congratulations on being one of the first set of individuals to make use of this platform that rewards you.
+    </p>
+    <p>
+        We hope that you enjoy this opportunity. Feel free to contact our support in case of any inquiry. Verify your email now to get started.
+    </p>
+    <p>
+        Once again, you are welcome!
+    </p>
+    <p>
+        P S: This link stops working after (specified limit of time to deactivate link)
+    </p>
+{% endblock %}
+
+{% block signature %}
+    {{ block.super }}
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+{% endblock %}
+
+
+
+
+
+
+
+
+Warm regards,
+En Camp
+
