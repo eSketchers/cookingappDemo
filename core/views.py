@@ -41,6 +41,7 @@ class ListData(APIView):
                                 }
                 data = {
                     'img_src' : src,
+                    'product_link':content['link']['@href'],
                     'details' : para_tag,
                     'title': content['title'],
                     'vendor'  : content['s:vendor'],
@@ -49,8 +50,7 @@ class ListData(APIView):
                     'mul_variants': variants
                 }
                 result.append(data)
-
-            return Response(result, status=status.HTTP_201_CREATED)
+            return Response(result, status=status.HTTP_200_OK)
         else:
             url_error = True
             return Response(url_error, status=status.HTTP_404_NOT_FOUND)
