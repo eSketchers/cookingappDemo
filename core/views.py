@@ -4,12 +4,17 @@ import xmltodict
 from bs4 import BeautifulSoup
 from rest_framework import status
 from rest_framework.response import Response
+from .models import *
+from .serializers import *
+from rest_framework.permissions import IsAuthenticated
 import json
 
 # Create your views here.
 
 
 class ListData(APIView):
+
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         result = []
@@ -41,6 +46,7 @@ class ListData(APIView):
                                 }
                 data = {
                     'img_src' : src,
+                    'product_link':content['link']['@href'],
                     'details' : para_tag,
                     'title': content['title'],
                     'vendor'  : content['s:vendor'],
@@ -50,7 +56,15 @@ class ListData(APIView):
                 }
                 result.append(data)
 
-            return Response(result, status=status.HTTP_201_CREATED)
+            favorite = RssFeeds.objects.filter(brand_name=page_res['feed']['title'],
+                                                    user=request.user).exists()
+            if not favorite:
+                RssFeeds.objects.create(
+                                    brand_name = page_res['feed']['title'],
+                                    brand_url = page_res['feed']['id'].split("/collections")[0],
+                                    user    = request.user
+                                    )
+            return Response(result, status=status.HTTP_200_OK)
         else:
             url_error = True
             return Response(url_error, status=status.HTTP_404_NOT_FOUND)
@@ -65,3 +79,43 @@ class ListData(APIView):
             return res_dict
         except Exception as e:
             return
+
+
+class ListRss(APIView):
+    """
+       List all searched urls of specific user.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        feeds = RssFeeds.objects.filter(user=request.user)
+        serializer = FeedsSerializer(feeds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FavoriteFeeds(APIView):
+    """
+       List all favorite feeds.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        feeds = FavoriteSites.objects.filter(user=request.user)
+        serializer = FavoritesSerializer(feeds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        response = {}
+        try:
+            FavoriteSites.objects.create(user=request.user,
+                                         feeds_id = request.data['id']
+                                         )
+            RssFeeds.objects.filter(id=request.data['id']).update(is_favorite=True)
+            response.update({'success':True})
+            status_code = status.HTTP_201_CREATED
+        except Exception as e:
+            response.update({'success': False})
+            status_code = status.HTTP_403_FORBIDDEN
+
+        return Response(response, status=status_code)
+

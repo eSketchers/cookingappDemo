@@ -143,7 +143,7 @@ WSGI_APPLICATION = 'dropshipping.wsgi.application'
 AUTH_USER_MODEL = 'accounts.User'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=10),
     'JWT_ALLOW_REFRESH': True,
 }
 
