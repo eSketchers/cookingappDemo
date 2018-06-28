@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'g!bp6185czhoxtd=7&-x^glo-=*z66fd!v2pd2#m9c-v!34a9r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['']
+ALLOWED_HOSTS = ['api.dropshipdynamo.com']
 
 
 # Application definition

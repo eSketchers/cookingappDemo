@@ -1,5 +1,5 @@
 """
-WSGI config for en_camp project.
+WSGI config for DropShipDynamo.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "en_camp.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dropshipping.settings")
 
 application = get_wsgi_application()

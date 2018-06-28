@@ -19,4 +19,4 @@ requests-oauthlib==0.8.0
 six==1.11.0
 urllib3==1.22
 django-cors-headers==2.2.0
-xmtodict==0.11.0
+#xmtodict==0.11.0
