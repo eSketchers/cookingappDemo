@@ -25,18 +25,15 @@ class ListData(APIView):
         if page_res:
             for content in page_res['feed']['entry']:
                 soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
-                img_tag = soup.find_all("img")
-                src = img_tag[0].attrs['src']
-                table = soup.find('table')
-                row = table.find_all('tr')[1]
-                data = row.find('td')
-                p_tag = data.find_all("p", limit=2)
+                src = soup.find_all("img")[0].attrs['src']
+                tb_data = soup.find('table').find_all('tr')[1].find('td')
+                p_tag = tb_data.find_all("p", limit=2)
                 if len(p_tag) == 2:
                     para_tag = str(p_tag[0]) + str(p_tag[1])
                 elif len(p_tag) == 1:
                     para_tag = str(p_tag[0])
                 else:
-                    para_tag = data.find('p')
+                    para_tag = tb_data.get_text()
                 if isinstance(content['s:variant'], list):
                     variants = []
                     variants.append(content['s:variant'])
@@ -56,10 +53,10 @@ class ListData(APIView):
                 }
                 result.append(data)
 
-            favorite = RssFeeds.objects.filter(brand_name=page_res['feed']['title'],
+            favorite = RssFeed.objects.filter(brand_name=page_res['feed']['title'],
                                                     user=request.user).exists()
             if not favorite:
-                RssFeeds.objects.create(
+                RssFeed.objects.create(
                                     brand_name = page_res['feed']['title'],
                                     brand_url = page_res['feed']['id'].split("/collections")[0],
                                     user    = request.user
@@ -88,7 +85,7 @@ class ListRss(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        feeds = RssFeeds.objects.filter(user=request.user)
+        feeds = RssFeed.objects.filter(user=request.user)
         serializer = FeedsSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -100,17 +97,17 @@ class FavoriteFeeds(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        feeds = FavoriteSites.objects.filter(user=request.user)
+        feeds = FavoriteSite.objects.filter(user=request.user)
         serializer = FavoritesSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         response = {}
         try:
-            FavoriteSites.objects.create(user=request.user,
-                                         feeds_id = request.data['id']
+            FavoriteSite.objects.create(user=request.user,
+                                         feed_id = request.data['id']
                                          )
-            RssFeeds.objects.filter(id=request.data['id']).update(is_favorite=True)
+            RssFeed.objects.filter(id=request.data['id']).update(is_favorite=True)
             response.update({'success':True})
             status_code = status.HTTP_201_CREATED
         except Exception as e:

@@ -5,14 +5,13 @@ from .models import *
 class FeedsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RssFeeds
+        model = RssFeed
         fields = ('id', 'brand_name', 'brand_url', 'is_favorite',)
 
 
 class FavoritesSerializer(serializers.ModelSerializer):
-    # feeds = FeedsSerializer()
 
     class Meta:
-        model = FavoriteSites
+        model = FavoriteSite
         depth = 1
-        fields = ('feeds', )
+        fields = ('feed', )

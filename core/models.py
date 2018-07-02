@@ -3,7 +3,7 @@ from accounts.models import User
 # Create your models here.
 
 
-class RssFeeds(models.Model):
+class RssFeed(models.Model):
     user = models.ForeignKey(User,
                              related_name='user_rss',
                              on_delete=models.CASCADE
@@ -23,14 +23,12 @@ class RssFeeds(models.Model):
         verbose_name_plural = 'Feeds'
 
 
-class FavoriteSites(models.Model):
+class FavoriteSite(models.Model):
     user = models.ForeignKey(User,
-                             related_name='user',
                              verbose_name='User',
                              on_delete=models.CASCADE
                              )
-    feeds = models.ForeignKey(RssFeeds,
-                              related_name='feeds',
+    feed = models.ForeignKey(RssFeed,
                               on_delete=models.CASCADE
                               )
 
@@ -38,8 +36,49 @@ class FavoriteSites(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.feeds.brand_name
+        return self.feed.brand_name
 
     class Meta:
         verbose_name = 'Favorite'
         verbose_name_plural = 'Favorites'
+
+
+class StoreUrl(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(default='', max_length=255, blank=False, null=False)
+    url = models.CharField(max_length=255, blank=False, null=False)
+    revenue = models.CharField(max_length=255, blank=True, null=True)
+    get_product = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Store"
+        verbose_name_plural = "Stores"
+
+
+class ProductDetail(models.Model):
+
+    title = models.CharField(max_length=255, blank=False, null=False)
+    type = models.CharField(max_length=255, blank=True, null=True)
+    vendor = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(max_length=5000, null=False, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.vendor
+
+    class Meta:
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
+
+
+
+
