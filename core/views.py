@@ -44,6 +44,7 @@ class ListData(APIView):
                 data = {
                     'img_src' : src,
                     'product_link':content['link']['@href'],
+                    'product_keyword':content['link']['@href'].split('/')[-1],
                     'details' : para_tag,
                     'title': content['title'],
                     'vendor'  : content['s:vendor'],
