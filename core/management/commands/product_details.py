@@ -44,7 +44,7 @@ class Command(BaseCommand):
                     continue
 
                 pars_response = xmltodict.parse(response)
-                if pars_response['feed']['entry']:
+                if hasattr(pars_response['feed'], 'entry'):
                     for content in pars_response['feed']['entry']:
                         soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
                         tb_data = soup.find('table').find_all('tr')[1].find('td')
