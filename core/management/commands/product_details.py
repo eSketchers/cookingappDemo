@@ -44,30 +44,34 @@ class Command(BaseCommand):
                     continue
 
                 pars_response = xmltodict.parse(response)
-                for content in pars_response['feed']['entry']:
-                    soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
-                    tb_data = soup.find('table').find_all('tr')[1].find('td')
-                    desc = tb_data.text
-                    # p_tag = tb_data.find_all("p", limit=1)
-                    #
-                    # if p_tag.__len__() == 0:
-                    #     description = tb_data.get_text()
-                    # else:
-                    #     description = p_tag[0].get_text()
-                    try:
-                        ProductDetail.objects.create(title = content['title'],
-                                                     type = content['s:type'],
-                                                     vendor = content['s:vendor'],
-                                                     description = desc )
-                    except Exception as e:
-                        print("Error on inserting product detail.")
-                        print('Reason',e.reason)
-                        continue
+                if pars_response['feed']['entry']:
+                    for content in pars_response['feed']['entry']:
+                        soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
+                        tb_data = soup.find('table').find_all('tr')[1].find('td')
+                        desc = tb_data.text
+                        # p_tag = tb_data.find_all("p", limit=1)
+                        #
+                        # if p_tag.__len__() == 0:
+                        #     description = tb_data.get_text()
+                        # else:
+                        #     description = p_tag[0].get_text()
+                        try:
+                            ProductDetail.objects.create(title = content['title'],
+                                                         type = content['s:type'],
+                                                         vendor = content['s:vendor'],
+                                                         description = desc )
+                        except Exception as e:
+                            print("Error on inserting product detail.")
+                            print('Reason',e.reason)
+                            continue
 
-                # make url get product field True.
-                url_obj.get_product = True
-                url_obj.save()
-                print("Successfully inserted {0} products.".format(url_obj.url))
+                    # make url get product field True.
+                    url_obj.get_product = True
+                    url_obj.save()
+                    print("Successfully inserted {0} products.".format(url_obj.url))
+                else:
+                    print("Feeds has no entries.")
+                    continue
 
         except Exception as e:
             print("Error:"+str(e))
