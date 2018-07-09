@@ -9,6 +9,7 @@ from core.models import *
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'vendor', 'type']
+    search_fields = ('title',)
 
 
 class StoreAdmin(admin.ModelAdmin):
@@ -20,3 +21,4 @@ admin.site.register(RssFeed)
 admin.site.register(FavoriteSite)
 admin.site.register(StoreUrl, StoreAdmin)
 admin.site.register(ProductDetail, ProductAdmin)
+admin.site.register(TrendingProduct)

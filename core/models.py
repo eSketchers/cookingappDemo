@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from django.contrib.postgres.fields import JSONField
 # Create your models here.
 
 
@@ -68,6 +69,7 @@ class ProductDetail(models.Model):
     type = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(max_length=5000, null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -80,5 +82,18 @@ class ProductDetail(models.Model):
         verbose_name_plural = "Products"
 
 
+class TrendingProduct(models.Model):
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    data = JSONField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Trending Product'
+        verbose_name_plural = 'Trending Products'
+
+    def __str__(self):
+        return self.user.get_full_name()
 
