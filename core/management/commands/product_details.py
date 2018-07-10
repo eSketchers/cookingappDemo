@@ -66,7 +66,8 @@ class Command(BaseCommand):
                         # else:
                         #     description = p_tag[0].get_text()
                         try:
-                            ProductDetail.objects.create(title = content['title'],
+                            ProductDetail.objects.create(user_id = user_id,
+                                                         title = content['title'],
                                                          type = content['s:type'],
                                                          vendor = content['s:vendor'],
                                                          description = desc )
