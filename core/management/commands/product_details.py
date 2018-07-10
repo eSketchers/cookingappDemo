@@ -10,8 +10,18 @@ from core.models import StoreUrl, ProductDetail
 class Command(BaseCommand):
     help = 'Scrape Product details from urls store in Stores.'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--user-id', dest='user', required=True,
+            help='user id against which product inserted.',
+        )
+
     def handle(self, *args, **options):
-        user_id = 4
+        if options['user']:
+            user_id = options['user']
+        else:
+            print("Enter user id with command.")
+            return
         print("Executing....")
         start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
         print('The script start time: {0} '.format(start_time))
