@@ -117,3 +117,14 @@ class FavoriteFeeds(APIView):
 
         return Response(response, status=status_code)
 
+
+class ListTrendingProduct(APIView):
+    """ List all trending products feeds.
+        """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        trending = TrendingProduct.objects.filter(user=request.user)
+        serializer = TrendingSerializer(trending, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

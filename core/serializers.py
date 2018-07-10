@@ -15,3 +15,10 @@ class FavoritesSerializer(serializers.ModelSerializer):
         model = FavoriteSite
         depth = 1
         fields = ('feed', )
+
+
+class TrendingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TrendingProduct
+        fields = ('data', )

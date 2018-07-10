@@ -51,11 +51,19 @@ class Command(BaseCommand):
                         get_product = process.extract(content['title'], query, scorer=fuzz.token_set_ratio)
                         for title, score in get_product:
                             if score > 50:
-                                product = {'product': title}
-                            match_prd.append(product)
+                                detail = ProductDetail.objects.filter(user_id = user_id, title__contains = title)
+                                if detail.exists():
+                                    for det in detail:
+                                        product = {'product': title,
+                                                   'type': det.type,
+                                                   'vendor': det.vendor
+                                                   }
+                                        match_prd.append(product)
                         each_store.append({'main_title': content['title'],
                                            'product': match_prd })
-                    store = {"store": each_store}
+                    store = {"vendor":content['s:vendor'],
+                             "store": each_store
+                             }
                 final_result.append(store)
             data = {'data': final_result}
             TrendingProduct.objects.create(user_id=user_id, data=data)
