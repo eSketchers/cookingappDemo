@@ -9,8 +9,18 @@ from core.models import ProductDetail, TrendingProduct, RssFeed
 class Command(BaseCommand):
     help = 'Match products with products table and get similar title product.'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--user-id', dest='user', required=True,
+            help='user id against which product inserted.',
+        )
+
     def handle(self, *args, **options):
-        user_id = 4
+        if options['user']:
+            user_id = options['user']
+        else:
+            print("Enter user id with command.")
+            return
         print("Executing....")
         start_time = datetime.datetime.now().time().strftime('%H:%M:%S')
         print('The script start time: {0} '.format(start_time))
