@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 import urllib.request
 import datetime
 import xmltodict
+from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz, process
 from core.models import ProductDetail, TrendingProduct, RssFeed
 
@@ -57,6 +58,8 @@ class Command(BaseCommand):
                 pars_response = xmltodict.parse(response)
                 if 'entry' in pars_response['feed']:
                     for content in pars_response['feed']['entry']:
+                        soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
+                        src = soup.find_all("img")[0].attrs['src']
                         match_prd = []
                         get_product = process.extract(content['title'], query, scorer=fuzz.token_set_ratio)
                         for title, score in get_product:
@@ -66,10 +69,12 @@ class Command(BaseCommand):
                                     for det in detail:
                                         product = {'product': title,
                                                    'type': det.type,
-                                                   'vendor': det.vendor
+                                                   'vendor': det.vendor,
+                                                   'image' : det.img_link,
                                                    }
                                         match_prd.append(product)
                         each_store.append({'main_title': content['title'],
+                                           'main_img': src,
                                            'product': match_prd })
                     store = {"vendor":content['s:vendor'],
                              "store": each_store

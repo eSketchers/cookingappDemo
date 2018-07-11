@@ -57,19 +57,15 @@ class Command(BaseCommand):
                 if 'entry' in pars_response['feed']:
                     for content in pars_response['feed']['entry']:
                         soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
+                        src = soup.find_all("img")[0].attrs['src']
                         tb_data = soup.find('table').find_all('tr')[1].find('td')
                         desc = tb_data.text
-                        # p_tag = tb_data.find_all("p", limit=1)
-                        #
-                        # if p_tag.__len__() == 0:
-                        #     description = tb_data.get_text()
-                        # else:
-                        #     description = p_tag[0].get_text()
                         try:
                             ProductDetail.objects.create(user_id = user_id,
                                                          title = content['title'],
                                                          type = content['s:type'],
                                                          vendor = content['s:vendor'],
+                                                         img_link = src,
                                                          description = desc )
                         except Exception as e:
                             print("Error on inserting product detail.")
