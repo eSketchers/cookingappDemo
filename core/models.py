@@ -69,6 +69,7 @@ class ProductDetail(models.Model):
     type = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.CharField(max_length=255, blank=True, null=True)
     img_link = models.CharField(max_length=255, blank=True, null=True)
+    product_link = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(max_length=5000, null=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

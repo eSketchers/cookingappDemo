@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand, CommandError
 from bs4 import BeautifulSoup
 import urllib.request
 import datetime
-import time
 import xmltodict
 from core.models import StoreUrl, ProductDetail
 
@@ -66,6 +65,7 @@ class Command(BaseCommand):
                                                          type = content['s:type'],
                                                          vendor = content['s:vendor'],
                                                          img_link = src,
+                                                         product_link = content['link']['@href'],
                                                          description = desc )
                         except Exception as e:
                             print("Error on inserting product detail.")

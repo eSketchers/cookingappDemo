@@ -68,14 +68,17 @@ class Command(BaseCommand):
                                 if detail.exists():
                                     for det in detail:
                                         product = {'product': title,
-                                                   'type': det.type,
+                                                   'type':   det.type,
                                                    'vendor': det.vendor,
                                                    'image' : det.img_link,
+                                                   'link':   det.product_link
                                                    }
                                         match_prd.append(product)
                         each_store.append({'main_title': content['title'],
                                            'main_img': src,
-                                           'product': match_prd })
+                                           'product': match_prd,
+                                           'link': content['link']['@href']
+                                           })
                     store = {"vendor":content['s:vendor'],
                              "store": each_store
                              }
