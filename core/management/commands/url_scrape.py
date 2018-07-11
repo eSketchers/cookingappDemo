@@ -66,11 +66,16 @@ class Command(BaseCommand):
                         if url.get_text().startswith('www.'):
                             pars_url = url.get_text().split('.', 1)[1]
 
-                        # Save stores data in model.
-                        StoreUrl.objects.create(user_id=user_id,
-                                                title=title,
-                                                url=pars_url,
-                                                revenue=revenue)
+                        exist_url = StoreUrl.objects.filter(title=title, user_id=user_id).exists()
+
+                        if not exist_url:
+                            # Save stores data in model.
+                            StoreUrl.objects.create(user_id=user_id,
+                                                    title=title,
+                                                    url=pars_url,
+                                                    revenue=revenue)
+                        else:
+                            continue
                 print("Inserted url Successfully.")
             except Exception as e:
                 print("Error Occur:")
