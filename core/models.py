@@ -99,3 +99,16 @@ class TrendingProduct(models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
+
+class CronStatus(models.Model):
+
+    job_name = models.CharField(max_length=255, blank=True, null=True)
+    status = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.job_name
+
+
