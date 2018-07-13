@@ -77,7 +77,11 @@ class Command(BaseCommand):
                                      }
                         final_result.append(store)
                     data = {'data': final_result}
-                    TrendingProduct.objects.update_or_create(user_id = user.user_id, data=data)
+                    obj_trend = TrendingProduct.objects.filter(user_id = user.user_id)
+                    if obj_trend.exists():
+                        TrendingProduct.objects.filter(user_id=user.user_id).update(data=data)
+                    else:
+                        TrendingProduct.objects.create(user_id=user.user_id, data=data)
                 except Exception as e:
                     print("Error:" + str(e))
                     raise CommandError(e)
