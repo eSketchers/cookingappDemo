@@ -8,6 +8,8 @@ from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 import json
+from core.client import RestClient
+from random import Random
 
 # Create your views here.
 
@@ -128,3 +130,39 @@ class ListTrendingProduct(APIView):
         serializer = TrendingSerializer(trending, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class SimilarKeyword(APIView):
+
+    def post(self, *args, **kwargs):
+
+        email = "henrywilliam2020@gmail.com"
+        password = "a6B7Ftr5K4uWjxkl"
+
+        client = RestClient(email,password)
+        s_keyword = self.request.data['keyword']
+
+        post_data = dict()
+        post_data["1"] = dict(
+            keyword= s_keyword,
+            country_code="US",
+            language="en",
+            limit=5,
+            offset=0,
+            orderby="cpc,desc",
+            filters=[
+                ["cpc", ">", 0],
+                "or",
+                [
+                    ["search_volume", ">", 0],
+                    "and",
+                    ["search_volume", "<=", 1000]
+                ]
+            ]
+        )
+
+        response = client.post("/v2/kwrd_finder_similar_keywords_get", dict(data=post_data))
+        if response["status"] == "error":
+            print("error. Code: %d Message: %s" % (response["error"]["code"], response["error"]["message"]))
+            return Response(response["error"]["message"], status=response["error"]["code"])
+        else:
+            return Response(response["results"]['1'], status=status.HTTP_200_OK)
