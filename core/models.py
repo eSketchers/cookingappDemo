@@ -112,3 +112,24 @@ class CronStatus(models.Model):
         return self.job_name
 
 
+class Influencer(models.Model):
+
+    url = models.CharField(blank=True, null=True, max_length=255)
+    type = models.CharField(blank=True, null=True, max_length=255)
+    count = models.BigIntegerField(null=True, blank=True, default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Influencer'
+        verbose_name_plural = 'Influencers'
+
+    def __str__(self):
+        return self.type
+
+
+
+
+
+

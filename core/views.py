@@ -148,7 +148,7 @@ class SimilarKeyword(APIView):
             language="en",
             limit=5,
             offset=0,
-            orderby="cpc,desc",
+            orderby="search_volume,desc",
             filters=[
                 ["cpc", ">", 0],
                 "or",
@@ -156,6 +156,10 @@ class SimilarKeyword(APIView):
                     ["search_volume", ">", 0],
                     "and",
                     ["search_volume", "<=", 1000]
+                ],
+                "and",
+                [
+                    "search_volume", "in", [10, 500]
                 ]
             ]
         )
