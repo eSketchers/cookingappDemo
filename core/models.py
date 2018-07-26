@@ -114,9 +114,18 @@ class CronStatus(models.Model):
 
 class Influencer(models.Model):
 
-    url = models.CharField(blank=True, null=True, max_length=255)
-    type = models.CharField(blank=True, null=True, max_length=255)
-    count = models.BigIntegerField(null=True, blank=True, default=0)
+    name        = models.CharField(blank=True, null=True, max_length=255)
+    username    = models.CharField(blank=True, null=True, max_length=255)
+    url         = models.CharField(blank=True, null=True, max_length=255)
+    type        = models.CharField(blank=True, null=True, max_length=255)
+    count       = models.BigIntegerField(null=True, blank=True, default=0)
+    profile_pic = models.CharField(blank=True, null=True, max_length=255)
+    profile_pic_hd = models.CharField(blank=True, null=True, max_length=255)
+    biograpghy      = models.CharField(blank=True, null=True, max_length=255)
+    external_link  = models.CharField(blank=True, null=True, max_length=255)
+    followed_by    = models.CharField(blank=True, null=True, max_length=255)
+    follow         = models.CharField(blank=True, null=True, max_length=255)
+    info           = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)

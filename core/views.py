@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 import urllib.request
 import xmltodict
 from bs4 import BeautifulSoup
@@ -7,10 +8,16 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
-import json
 from core.client import RestClient
-from random import Random
+from core.pagination import LargeResultsSetPagination
+from itertools import cycle
+import requests
+from lxml.html import fromstring
 
+
+
+user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+headers = {'User-Agent': user_agent, }
 # Create your views here.
 
 
@@ -170,3 +177,13 @@ class SimilarKeyword(APIView):
             return Response(response["error"]["message"], status=response["error"]["code"])
         else:
             return Response(response["results"]['1'], status=status.HTTP_200_OK)
+
+
+class InfluencerList(generics.ListAPIView):
+
+    serializer_class = InfluencerSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get_queryset(self):
+        queryset = Influencer.objects.all().order_by('created_at')
+        return queryset

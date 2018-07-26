@@ -22,3 +22,12 @@ class TrendingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrendingProduct
         fields = ('data', )
+
+
+class InfluencerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Influencer
+        fields = ('url','type','count','name','username',
+                  'profile_pic_hd','biograpghy','external_link',
+                  'followed_by','follow',)
