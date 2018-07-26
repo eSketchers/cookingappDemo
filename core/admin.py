@@ -16,11 +16,15 @@ class StoreAdmin(admin.ModelAdmin):
     list_display = ['title', 'url', 'revenue', 'get_product']
 
 
+class InfluencerAdmin(admin.ModelAdmin):
+    list_display = ['type', 'url', 'name']
+    search_fields = ('url','name')
+
 # Register your models here.
 admin.site.register(RssFeed)
 admin.site.register(FavoriteSite)
 admin.site.register(StoreUrl, StoreAdmin)
 admin.site.register(ProductDetail, ProductAdmin)
 admin.site.register(TrendingProduct)
-admin.site.register(Influencer)
+admin.site.register(Influencer, InfluencerAdmin)
 admin.site.register(CronStatus)
