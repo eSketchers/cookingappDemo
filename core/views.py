@@ -185,5 +185,5 @@ class InfluencerList(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
-        queryset = Influencer.objects.all().order_by('created_at')
+        queryset = Influencer.objects.filter(info=True).order_by('created_at')
         return queryset
