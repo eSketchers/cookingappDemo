@@ -138,6 +138,26 @@ class Influencer(models.Model):
         return self.type
 
 
+class CustomProduct(models.Model):
+
+    title = models.CharField(max_length=255, blank=False, null=False)
+    type = models.CharField(max_length=255, blank=True, null=True)
+    vendor = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to='images_product/%Y/%m/%d/', blank=True, null=True)
+    product_link = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(max_length=5000, null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Custom Product"
+        verbose_name_plural = "Custom Products"
+
 
 
 
