@@ -10,5 +10,6 @@ urlpatterns = [
   url(r'^trends/$',ListTrendingProduct.as_view(), name='trends'),
   url(r'^keywords/$',SimilarKeyword.as_view(), name='similar-keywords'),
   url(r'^list-influencer/', InfluencerList.as_view(), name='influencer-list'),
+  url(r'^list-products/', CustomProductList.as_view(), name='product-list'),
 
 ]

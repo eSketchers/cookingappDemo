@@ -31,3 +31,11 @@ class InfluencerSerializer(serializers.ModelSerializer):
         fields = ('url','type','count','name','username',
                   'profile_pic_hd','biograpghy','external_link',
                   'followed_by','follow',)
+
+
+class CustomProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomProduct
+        fields = ('title','type','vendor','image','description',
+                  'product_link',)

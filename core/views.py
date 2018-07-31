@@ -187,3 +187,13 @@ class InfluencerList(generics.ListAPIView):
     def get_queryset(self):
         queryset = Influencer.objects.filter(info=True).order_by('created_at')
         return queryset
+
+
+class CustomProductList(generics.ListAPIView):
+
+    serializer_class = CustomProductSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get_queryset(self):
+        queryset = CustomProduct.objects.all().order_by('created_at')
+        return queryset
