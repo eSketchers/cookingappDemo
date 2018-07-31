@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework import generics
+from django.http import Http404
 import urllib.request
 import xmltodict
 from bs4 import BeautifulSoup
@@ -10,11 +11,7 @@ from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from core.client import RestClient
 from core.pagination import LargeResultsSetPagination
-from itertools import cycle
-import requests
-from lxml.html import fromstring
-
-
+from rest_framework.filters import SearchFilter
 
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
@@ -47,7 +44,7 @@ class ListData(APIView):
                     variants = []
                     variants.append(content['s:variant'])
                 else:
-                    product_details = { 'sku': content['s:variant']['s:sku'], 'grams': content['s:variant']['s:grams'],
+                    product_details = { 'published': content['published'], 'grams': content['s:variant']['s:grams'],
                                   'price': content['s:variant']['s:price']['@currency'] + ' ' + content['s:variant']['s:price']['#text']
                                 }
                 data = {
@@ -98,6 +95,17 @@ class ListRss(APIView):
         feeds = RssFeed.objects.filter(user=request.user)
         serializer = FeedsSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self, pk):
+        try:
+            return RssFeed.objects.get(pk=pk)
+        except RssFeed.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        feed = self.get_object(pk)
+        feed.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FavoriteFeeds(APIView):
@@ -183,6 +191,8 @@ class InfluencerList(generics.ListAPIView):
 
     serializer_class = InfluencerSerializer
     pagination_class = LargeResultsSetPagination
+    filter_backends = (SearchFilter,)
+    search_fields = ('^username', 'type')
 
     def get_queryset(self):
         queryset = Influencer.objects.filter(info=True).order_by('created_at')
