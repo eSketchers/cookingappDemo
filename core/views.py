@@ -96,16 +96,6 @@ class ListRss(APIView):
         serializer = FeedsSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_object(self, pk):
-        try:
-            return RssFeed.objects.get(pk=pk)
-        except RssFeed.DoesNotExist:
-            raise Http404
-
-    def delete(self, request, pk, format=None):
-        feed = self.get_object(pk)
-        feed.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FavoriteFeeds(APIView):
@@ -133,6 +123,18 @@ class FavoriteFeeds(APIView):
             status_code = status.HTTP_403_FORBIDDEN
 
         return Response(response, status=status_code)
+
+    def get_object(self, pk):
+        try:
+            return FavoriteSite.objects.get(feed_id=pk, user=self.request.user)
+        except RssFeed.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        favorite = self.get_object(pk)
+        favorite.delete()
+        RssFeed.objects.filter(pk=pk).update(is_favorite=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListTrendingProduct(APIView):

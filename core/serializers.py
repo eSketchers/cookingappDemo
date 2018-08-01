@@ -14,7 +14,7 @@ class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteSite
         depth = 1
-        fields = ('feed', )
+        fields = ('id','feed', )
 
 
 class TrendingSerializer(serializers.ModelSerializer):
@@ -38,4 +38,4 @@ class CustomProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomProduct
         fields = ('title','type','vendor','image','description',
-                  'product_link',)
+                  'product_link','ali_express',)
