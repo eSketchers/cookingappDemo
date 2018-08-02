@@ -14,8 +14,12 @@ from core.client import RestClient
 from core.pagination import LargeResultsSetPagination
 from rest_framework.filters import SearchFilter
 
+import boto3
+import json
+
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
+comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 # Create your views here.
 
 
@@ -196,9 +200,23 @@ class SimilarKeyword(APIView):
 
         email = "henrywilliam2020@gmail.com"
         password = "a6B7Ftr5K4uWjxkl"
+        longest = 0
 
         client = RestClient(email,password)
-        s_keyword = self.request.data['keyword']
+
+        try:
+            key_phrase = comprehend.detect_key_phrases(Text=self.request.data['keyword'], LanguageCode='en')
+            len_result = len(key_phrase['KeyPhrases'])
+            if  len_result > 0:
+                for key in key_phrase['KeyPhrases']:
+                    if len(key['Text']) > longest:
+                        s_keyword = key['Text']
+                        longest = len(key['Text'])
+            else:
+                s_keyword = self.request.data['keyword']
+        except Exception as e:
+            s_keyword = self.request.data['keyword']
+
 
         post_data = dict()
         post_data["1"] = dict(
@@ -251,3 +269,4 @@ class CustomProductList(generics.ListAPIView):
     def get_queryset(self):
         queryset = CustomProduct.objects.all().order_by('created_at')
         return queryset
+
