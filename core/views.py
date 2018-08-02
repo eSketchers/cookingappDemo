@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from django.http import Http404
 import urllib.request
+import requests
 import xmltodict
 from bs4 import BeautifulSoup
 from rest_framework import status
@@ -28,8 +29,8 @@ class ListData(APIView):
         product_details = {}
         url = request.data['link']
         page_res = self.get_page(url)
-        if page_res:
-            for content in page_res['feed']['entry']:
+        if page_res['response']:
+            for content in page_res['response']['feed']['entry']:
                 soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
                 src = soup.find_all("img")[0].attrs['src']
                 tb_data = soup.find('table').find_all('tr')[1].find('td')
@@ -60,29 +61,71 @@ class ListData(APIView):
                 }
                 result.append(data)
 
-            favorite = RssFeed.objects.filter(brand_name=page_res['feed']['title'],
+            favorite = RssFeed.objects.filter(brand_name=page_res['response']['feed']['title'],
                                                     user=request.user).exists()
             if not favorite:
                 RssFeed.objects.create(
-                                    brand_name = page_res['feed']['title'],
-                                    brand_url = page_res['feed']['id'].split("/collections")[0],
+                                    brand_name = page_res['response']['feed']['title'],
+                                    brand_url = page_res['response']['feed']['id'].split("/collections")[0],
                                     user    = request.user
                                     )
             return Response(result, status=status.HTTP_200_OK)
+
+        elif page_res['error']:
+            if page_res['status_code'] == 430:
+                return Response(page_res['error'], status=page_res['status_code'])
+            else:
+                return Response(page_res['error'], status=page_res['status_code'])
         else:
-            url_error = True
+            url_error = "Response of url is not available."
             return Response(url_error, status=status.HTTP_404_NOT_FOUND)
 
     def get_page(self, link):
-        error = False
+        payload = {}
         try:
-            req = urllib.request.Request(link)
-            with urllib.request.urlopen(req) as response:
-                response = response.read()
-            res_dict = xmltodict.parse(response)
-            return res_dict
-        except Exception as e:
-            return
+            # req = urllib.request.Request(link)
+            # with urllib.request.urlopen(req) as response:
+            #     response = response.read()
+            response = requests.get(link)
+            if response.status_code == 200:
+                res_dict = xmltodict.parse(response.text)
+                payload.update({'response':res_dict})
+                payload.update({'error': False})
+                payload.update({'status_code': response.status_code})
+                return payload
+            elif response.status_code == 430:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                txt = soup.findAll('p')
+                payload.update({'response':False})
+                payload.update({'error': txt[0].text})
+                payload.update({'status_code': response.status_code})
+                return payload
+            else:
+                payload.update({'response': False})
+                payload.update({'error':response.text})
+                payload.update({'status_code': response.status_code})
+                return payload
+        except requests.exceptions.HTTPError as errh:
+            print("Http Error:", errh)
+            payload.update({'response': False})
+            payload.update({'error': errh})
+            payload.update({'status_code': response.status_code})
+            return payload
+        except requests.exceptions.ConnectionError as errc:
+            payload.update({'response': False})
+            payload.update({'error': errc})
+            payload.update({'status_code': response.status_code})
+            return payload
+        except requests.exceptions.Timeout as errt:
+            payload.update({'response': False})
+            payload.update({'error': errt})
+            payload.update({'status_code': response.status_code})
+            return payload
+        except requests.exceptions.RequestException as err:
+            payload.update({'response': False})
+            payload.update({'error': err})
+            payload.update({'status_code': response.status_code})
+            return payload
 
 
 class ListRss(APIView):
@@ -95,7 +138,6 @@ class ListRss(APIView):
         feeds = RssFeed.objects.filter(user=request.user)
         serializer = FeedsSerializer(feeds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class FavoriteFeeds(APIView):
