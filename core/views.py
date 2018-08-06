@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.http import Http404
-import urllib.request
 import requests
 import xmltodict
 from bs4 import BeautifulSoup
@@ -13,9 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.client import RestClient
 from core.pagination import LargeResultsSetPagination
 from rest_framework.filters import SearchFilter
-
 import boto3
-import json
 
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
@@ -48,10 +45,23 @@ class ListData(APIView):
                 if isinstance(content['s:variant'], list):
                     variants = []
                     variants.append(content['s:variant'])
+                    price = float(content['s:variant'][0]['s:price']['#text'])
+                    unit = content['s:variant'][0]['s:price']['@currency']
+
+                    product_details = {'published': content['published'],
+                                       'grams': content['s:variant'][0]['s:grams'],
+                                       'price': price,
+                                       'unit': unit
+                                       }
+
                 else:
-                    product_details = { 'published': content['published'], 'grams': content['s:variant']['s:grams'],
-                                  'price': content['s:variant']['s:price']['@currency'] + ' ' + content['s:variant']['s:price']['#text']
-                                }
+                    price = float(content['s:variant']['s:price']['#text'])
+                    unit = content['s:variant']['s:price']['@currency']
+                    product_details = { 'published': content['published'],
+                                        'grams': content['s:variant']['s:grams'],
+                                        'price': price,
+                                        'unit': unit
+                                      }
                 data = {
                     'img_src' : src,
                     'product_link':content['link']['@href'],
@@ -269,4 +279,6 @@ class CustomProductList(generics.ListAPIView):
     def get_queryset(self):
         queryset = CustomProduct.objects.all().order_by('created_at')
         return queryset
+
+
 
