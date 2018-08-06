@@ -233,7 +233,7 @@ class SimilarKeyword(APIView):
             keyword= s_keyword,
             country_code="US",
             language="en",
-            limit=5,
+            limit=50,
             offset=0,
             orderby="search_volume,desc",
             filters=[
