@@ -23,7 +23,7 @@ class InfluencerAdmin(admin.ModelAdmin):
 
 class CustomProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'type', 'user']
-    search_fields = ('title','user')
+    search_fields = ('title',)
 
 
 class FeedBackAdmin(admin.ModelAdmin):
