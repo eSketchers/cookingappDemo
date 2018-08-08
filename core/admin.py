@@ -25,6 +25,11 @@ class CustomProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'type', 'user']
     search_fields = ('title','user')
 
+
+class FeedBackAdmin(admin.ModelAdmin):
+    list_display = ['email', 'created_at',]
+    search_fields = ('email',)
+
 # Register your models here.
 admin.site.register(RssFeed)
 admin.site.register(FavoriteSite)
@@ -33,4 +38,5 @@ admin.site.register(ProductDetail, ProductAdmin)
 admin.site.register(TrendingProduct)
 admin.site.register(Influencer, InfluencerAdmin)
 admin.site.register(CustomProduct, CustomProductAdmin)
+admin.site.register(FeedBack, FeedBackAdmin)
 admin.site.register(CronStatus)

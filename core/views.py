@@ -1,3 +1,4 @@
+from django.db.models import F
 from rest_framework.views import APIView
 from rest_framework import generics
 from django.http import Http404
@@ -267,7 +268,21 @@ class InfluencerList(generics.ListAPIView):
     search_fields = ('^username', 'type')
 
     def get_queryset(self):
-        queryset = Influencer.objects.filter(info=True).order_by('created_at')
+        min_range = self.request.query_params.get('min_range',None)
+        max_range = self.request.query_params.get('max_range',None)
+        if min_range and max_range:
+            queryset = Influencer.objects.filter(followed_by__gte=int(min_range),
+                                                 followed_by__lte=int(max_range)).order_by('created_at')
+            return queryset
+        elif min_range:
+            queryset = Influencer.objects.filter(followed_by__lte=int(min_range)).order_by('created_at')
+            return queryset
+
+        elif max_range:
+            queryset = Influencer.objects.filter(followed_by__gte=int(max_range)).order_by('created_at')
+            return queryset
+        else:
+            queryset = Influencer.objects.filter(info=True).order_by('created_at')
         return queryset
 
 

@@ -123,8 +123,8 @@ class Influencer(models.Model):
     profile_pic_hd = models.CharField(blank=True, null=True, max_length=255)
     biograpghy      = models.CharField(blank=True, null=True, max_length=255)
     external_link  = models.CharField(blank=True, null=True, max_length=255)
-    followed_by    = models.CharField(blank=True, null=True, max_length=255)
-    follow         = models.CharField(blank=True, null=True, max_length=255)
+    followed_by    = models.BigIntegerField(blank=True, null=True)
+    follow         = models.BigIntegerField(blank=True, null=True)
     info           = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -158,6 +158,22 @@ class CustomProduct(models.Model):
     class Meta:
         verbose_name = "Custom Product"
         verbose_name_plural = "Custom Products"
+
+
+class FeedBack(models.Model):
+
+    email = models.CharField(max_length=255 )
+    feedback = models.TextField(max_length=1000)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'feedback'
+        verbose_name_plural = 'feedbacks'
+
+    def __str__(self):
+        return self.email
 
 
 
