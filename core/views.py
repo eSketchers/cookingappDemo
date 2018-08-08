@@ -296,4 +296,24 @@ class CustomProductList(generics.ListAPIView):
         return queryset
 
 
+class FeedBackView(APIView):
+
+    def post(self, request, format=None):
+        response = {}
+        try:
+            # feedback = FeedBack.objects.filter(email=request.data['email']).exists()
+            # if feedback:
+            #     response.update({'feedback': "Feedback already exists."})
+            #     status_code = status.HTTP_409_CONFLICT
+            FeedBack.objects.create(email=request.data['email'],
+                                    feedback=request.data['comment'])
+            response.update({'success':True})
+            status_code = status.HTTP_201_CREATED
+        except Exception as e:
+            response.update({'success': False})
+            status_code = status.HTTP_403_FORBIDDEN
+
+        return Response(response, status=status_code)
+
+
 
