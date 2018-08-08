@@ -37,5 +37,5 @@ class CustomProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProduct
-        fields = ('title','type','vendor','image','description',
+        fields = ('title','type','vendor','image','video','description',
                   'product_link','ali_express',)

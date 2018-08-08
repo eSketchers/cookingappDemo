@@ -144,6 +144,7 @@ class CustomProduct(models.Model):
     type = models.CharField(max_length=255, blank=True, null=True)
     vendor = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='images_product/%Y/%m/%d/', blank=True, null=True)
+    video = models.FileField(upload_to='product_videos/%Y/%m/%d/', blank=True, null=True)
     ali_express = models.CharField(max_length=255, blank=True, null=True)
     product_link = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(max_length=5000, null=False, blank=False)
