@@ -228,7 +228,6 @@ class SimilarKeyword(APIView):
         except Exception as e:
             s_keyword = self.request.data['keyword']
 
-
         post_data = dict()
         post_data["1"] = dict(
             keyword= s_keyword,
@@ -265,15 +264,29 @@ class InfluencerList(generics.ListAPIView):
     serializer_class = InfluencerSerializer
     pagination_class = LargeResultsSetPagination
     filter_backends = (SearchFilter,)
-    search_fields = ('^username', 'type')
+    search_fields = ('^username',)
 
     def get_queryset(self):
         min_range = self.request.query_params.get('min_range',None)
         max_range = self.request.query_params.get('max_range',None)
-        if min_range and max_range:
+        category  = self.request.query_params.get('category',None)
+
+        if min_range and max_range and category:
+            queryset = Influencer.objects.filter(followed_by__gte=int(min_range),
+                                                 followed_by__lte=int(max_range),
+                                                 type=category).order_by('created_at')
+            return queryset
+
+        elif min_range and max_range:
             queryset = Influencer.objects.filter(followed_by__gte=int(min_range),
                                                  followed_by__lte=int(max_range)).order_by('created_at')
             return queryset
+
+        elif min_range and category:
+            queryset = Influencer.objects.filter(followed_by__lte=int(min_range),
+                                                 type=category).order_by('created_at')
+            return queryset
+
         elif min_range:
             queryset = Influencer.objects.filter(followed_by__lte=int(min_range)).order_by('created_at')
             return queryset
@@ -281,9 +294,18 @@ class InfluencerList(generics.ListAPIView):
         elif max_range:
             queryset = Influencer.objects.filter(followed_by__gte=int(max_range)).order_by('created_at')
             return queryset
+
+        elif max_range and category:
+            queryset = Influencer.objects.filter(followed_by__gte=int(max_range),
+                                                 type=category).order_by('created_at')
+            return queryset
+
+        elif category:
+            queryset = Influencer.objects.filter(type=category).order_by('created_at')
+            return queryset
         else:
             queryset = Influencer.objects.filter(info=True).order_by('created_at')
-        return queryset
+            return queryset
 
 
 class CustomProductList(generics.ListAPIView):
@@ -316,4 +338,11 @@ class FeedBackView(APIView):
         return Response(response, status=status_code)
 
 
+class InfluencerCategory(generics.ListAPIView):
+
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        queryset = Influencer.objects.values('type').distinct()
+        return queryset
 

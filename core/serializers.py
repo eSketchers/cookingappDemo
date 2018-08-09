@@ -39,3 +39,10 @@ class CustomProductSerializer(serializers.ModelSerializer):
         model = CustomProduct
         fields = ('title','type','vendor','image','video','description',
                   'product_link','ali_express',)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Influencer
+        fields = ('type',)
