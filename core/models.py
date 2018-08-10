@@ -177,6 +177,25 @@ class FeedBack(models.Model):
         return self.email
 
 
+class Keyword(models.Model):
 
+    key = models.CharField(max_length=255, blank=False, null=False)
+    cpc = models.FloatField(max_length=65)
+    volume = models.FloatField(max_length=65)
+    region = models.CharField(max_length=45, blank=True, null=True)
+    actual_price = models.FloatField(max_length=255)
+    store_price = models.FloatField(max_length=255)
+    profit = models.FloatField(max_length=255)
+    conversion_rate = models.FloatField(max_length=255)
+    profitability = models.FloatField(max_length=255)
+    product = models.ForeignKey('CustomProduct', related_name='hot_products', on_delete=models.CASCADE)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = 'keyword'
+        verbose_name_plural = 'keywords'
+
+    def __str__(self):
+        return self.key

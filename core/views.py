@@ -346,3 +346,14 @@ class InfluencerCategory(generics.ListAPIView):
         queryset = Influencer.objects.values('type').distinct()
         return queryset
 
+
+class KeywordProductView(APIView):
+
+    def post(self, request, format=None):
+        data = self.request.data['title']
+        qs = Keyword.objects.filter(product__title=data)
+        serializer = KeywordSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
