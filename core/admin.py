@@ -38,7 +38,8 @@ class KeywordAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         conv_rate = 0.01
-        profit = obj.product.selling_price - obj.product.actual_price
+        markup = (obj.product.selling_price - obj.product.actual_price)
+        profit = (markup / obj.product.actual_price) * 100
         profitability = obj.product.selling_price * (int(profit)/100) * conv_rate
         obj.profit = profit
         obj.profitability = profitability
