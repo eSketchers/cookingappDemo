@@ -38,13 +38,11 @@ class KeywordAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         conv_rate = 0.01
-        try:
-            profit = obj.product.selling_price - obj.product.actual_price
-            profitability = obj.product.selling_price * (int(profit)/100) * conv_rate
-            obj.profitability = profitability
-            super().save_model(request, obj, form, change)
-        except Exception as e:
-            pass
+        profit = obj.product.selling_price - obj.product.actual_price
+        profitability = obj.product.selling_price * (int(profit)/100) * conv_rate
+        obj.profitability = profitability
+        obj.save()
+
 
 # Register your models here.
 admin.site.register(RssFeed)
