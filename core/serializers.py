@@ -38,7 +38,7 @@ class CustomProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomProduct
         fields = ('title','type','vendor','image','video','description',
-                  'product_link','ali_express',)
+                  'product_link','ali_express','selling_price')
 
 
 class KeywordSerializer(serializers.ModelSerializer):
@@ -46,8 +46,6 @@ class KeywordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Keyword
         fields = ('key', 'cpc', 'volume', 'region',
-                  'actual_price','store_price',
-                  'profit', 'conversion_rate',
                   'profitability')
 
 

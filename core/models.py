@@ -148,7 +148,8 @@ class CustomProduct(models.Model):
     ali_express = models.CharField(max_length=255, blank=True, null=True)
     product_link = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(max_length=5000, null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    actual_price = models.FloatField(default=0, null=True, blank=True)
+    selling_price = models.FloatField(default=0, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -183,10 +184,7 @@ class Keyword(models.Model):
     cpc = models.FloatField(max_length=65)
     volume = models.FloatField(max_length=65)
     region = models.CharField(max_length=45, blank=True, null=True)
-    actual_price = models.FloatField(max_length=255)
-    store_price = models.FloatField(max_length=255)
     profit = models.FloatField(max_length=255)
-    conversion_rate = models.FloatField(max_length=255)
     profitability = models.FloatField(max_length=255)
     product = models.ForeignKey('CustomProduct', related_name='hot_products', on_delete=models.CASCADE)
 

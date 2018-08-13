@@ -22,7 +22,7 @@ class InfluencerAdmin(admin.ModelAdmin):
 
 
 class CustomProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'type', 'user']
+    list_display = ['title', 'type',]
     search_fields = ('title',)
 
 
@@ -32,17 +32,19 @@ class FeedBackAdmin(admin.ModelAdmin):
 
 
 class KeywordAdmin(admin.ModelAdmin):
-    list_display = ['key', 'cpc', 'volume', 'region',
-                    'actual_price','store_price',
-                    'profit', 'conversion_rate']
-    exclude = ('profitability',)
+    list_display = ['key', 'cpc', 'volume', 'region',]
+    exclude = ('profitability','profit',)
     search_fields = ('key',)
 
     def save_model(self, request, obj, form, change):
-        profitability = obj.store_price * (obj.profit/100) * obj.cpc
-        obj.profitability = profitability
-        super().save_model(request, obj, form, change)
-
+        conv_rate = 0.01
+        try:
+            profit = obj.product.selling_price - obj.product.actual_price
+            profitability = obj.product.selling_price * (int(profit)/100) * conv_rate
+            obj.profitability = profitability
+            super().save_model(request, obj, form, change)
+        except Exception as e:
+            pass
 
 # Register your models here.
 admin.site.register(RssFeed)
