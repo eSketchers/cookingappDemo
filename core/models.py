@@ -150,6 +150,7 @@ class CustomProduct(models.Model):
     description = models.TextField(max_length=5000, null=False, blank=False)
     actual_price = models.FloatField(default=0, null=True, blank=True)
     selling_price = models.FloatField(default=0, null=True, blank=True)
+    profit = models.FloatField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -184,7 +185,6 @@ class Keyword(models.Model):
     cpc = models.FloatField(max_length=65)
     volume = models.FloatField(max_length=65)
     region = models.CharField(max_length=45, blank=True, null=True)
-    profit = models.FloatField(max_length=255)
     profitability = models.FloatField(max_length=255)
     product = models.ForeignKey('CustomProduct', related_name='hot_products', on_delete=models.CASCADE)
 
@@ -197,3 +197,37 @@ class Keyword(models.Model):
 
     def __str__(self):
         return self.key
+
+
+class VideoGroup(models.Model):
+
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Video Group'
+        verbose_name_plural = 'Video Groups'
+
+    def __str__(self):
+        return self.name
+
+
+class TrainingVideo(models.Model):
+
+    url = models.CharField(max_length=255, blank=True, null=True)
+    group = models.ForeignKey('VideoGroup', related_name='video_group', on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Video'
+        verbose_name_plural = 'Videos'
+
+    def __str__(self):
+        return self.group.name
+

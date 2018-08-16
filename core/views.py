@@ -356,4 +356,35 @@ class KeywordProductView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class VideoGroupView(generics.ListAPIView):
+    """View to list training video groups.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains all groups details.
+    """
+
+    serializer_class = VideoGroupSerializer
+
+    def get_queryset(self):
+        queryset = VideoGroup.objects.filter(is_active=True)
+        return queryset
+
+
+class TrainingVideoView(generics.ListAPIView):
+    """View to list training video.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains all videos related to group name.
+    """
+
+    serializer_class = TrainingVideoSerializer
+
+    def get_queryset(self):
+        queryset = TrainingVideo.objects.filter(is_active=True)
+        return queryset
+
+
+
 

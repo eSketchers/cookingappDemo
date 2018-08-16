@@ -15,5 +15,7 @@ urlpatterns = [
   url(r'^feedback/', FeedBackView.as_view(), name='feedback'),
   url(r'^category-list/', InfluencerCategory.as_view(), name='category'),
   url(r'^keywords-product/', KeywordProductView.as_view(), name='keyword-product'),
+  url(r'^list-group/', VideoGroupView.as_view(), name='list-group'),
+  url(r'^list-videos/', TrainingVideoView.as_view(), name='list-videos'),
 
 ]

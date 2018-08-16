@@ -38,7 +38,8 @@ class CustomProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomProduct
         fields = ('title','type','vendor','image','video','description',
-                  'product_link','ali_express','selling_price')
+                  'product_link','ali_express','actual_price',
+                  'selling_price','profit',)
 
 
 class KeywordSerializer(serializers.ModelSerializer):
@@ -54,3 +55,18 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Influencer
         fields = ('type',)
+
+
+class VideoGroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = VideoGroup
+        fields = ('name',)
+
+
+class TrainingVideoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TrainingVideo
+        depth = 1
+        fields = ('url','group',)
