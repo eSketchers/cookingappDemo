@@ -26,12 +26,14 @@ class CustomPasswordResetForm(PasswordResetForm):
         """
         email = self.cleaned_data["email"]
         for user in self.get_users(email):
-            if not domain_override:
-                current_site = get_current_site(request)
-                site_name = current_site.name
-                domain = current_site.domain
-            else:
-                site_name = domain = domain_override
+            # if not domain_override:
+            #     current_site = get_current_site(request)
+            #     site_name = current_site.name
+            #     domain = current_site.domain
+            # else:
+            #     site_name = domain = domain_override
+            domain = "api.dropshipdynamo.com"
+            site_name = "Ecom Engine"
 
             context = {
                 'email': email,
@@ -43,26 +45,12 @@ class CustomPasswordResetForm(PasswordResetForm):
                 'protocol': 'https' if use_https else 'http',
             }
 
-            # Check if mobile verification code setting is enabled in settings.py
-            use_mobile_verification_code = getattr(settings, 'USE_MOBILE_VERIFICATION', False)
-            if use_mobile_verification_code:
-                mobile_verification_code = self.generate_verification_code_for_user(user)
-                context['mobile_verification_code'] = mobile_verification_code
-                context['use_mobile_verification_code'] = True  # Render verification part in template
-            else:
-                context['use_mobile_verification_code'] = False  # Do not render
-
             if extra_email_context is not None:
                 context.update(extra_email_context)
             self.send_mail(
                 subject_template_name, email_template_name, context, from_email,
                 email, html_email_template_name=html_email_template_name,
             )
-
-            # Now save the mobile verification code in DB
-            if use_mobile_verification_code:
-                code = MobileVerificationCode(user=user, code=mobile_verification_code)
-                code.save()
 
     def generate_verification_code_for_user(self, user):
         """
