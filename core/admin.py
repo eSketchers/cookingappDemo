@@ -23,7 +23,13 @@ class InfluencerAdmin(admin.ModelAdmin):
 
 class CustomProductAdmin(admin.ModelAdmin):
     list_display = ['title', 'type',]
+    exclude = ('profit',)
     search_fields = ('title',)
+
+    def save_model(self, request, obj, form, change):
+        profit_margin = (obj.selling_price - obj.actual_price)
+        obj.profit = profit_margin
+        obj.save()
 
 
 class FeedBackAdmin(admin.ModelAdmin):
@@ -41,19 +47,30 @@ class KeywordAdmin(admin.ModelAdmin):
         markup = (obj.product.selling_price - obj.product.actual_price)
         margin = (markup / obj.product.actual_price) * 100
         profitability = obj.product.selling_price * margin/100 * conv_rate
-        obj.profit = markup
         obj.profitability = profitability
         obj.save()
+
+
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ['name', 'is_active', 'created_at' ]
+    search_fields = ('name',)
+
+
+class TrainingVideoAdmin(admin.ModelAdmin):
+    list_display = ['group','is_active','created_at']
+    search_fields = ('group',)
 
 
 # Register your models here.
 admin.site.register(RssFeed)
 admin.site.register(FavoriteSite)
+admin.site.register(CronStatus)
+admin.site.register(TrendingProduct)
 admin.site.register(StoreUrl, StoreAdmin)
 admin.site.register(ProductDetail, ProductAdmin)
-admin.site.register(TrendingProduct)
 admin.site.register(Influencer, InfluencerAdmin)
 admin.site.register(CustomProduct, CustomProductAdmin)
 admin.site.register(FeedBack, FeedBackAdmin)
 admin.site.register(Keyword, KeywordAdmin)
-admin.site.register(CronStatus)
+admin.site.register(VideoGroup, GroupAdmin)
+admin.site.register(TrainingVideo, TrainingVideoAdmin)

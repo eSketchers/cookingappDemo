@@ -3,7 +3,7 @@
 {% block email_content %}
 
     Hi there,
-    Welcome and thanks for your interest in En Camp!
+    Welcome and thanks for your interest in Ecom Engine!
 
     Click the link below to verify your email
 
@@ -15,7 +15,7 @@
 
     Congratulations on being one of the first set of individuals to make use of this platform that rewards you.
 
-    We hope that you enjoy this opportunity and help us to take En Camp to the next level. Feel free to contact our support in case of any inquiry. Verify your email now to get started.
+    We hope that you enjoy this opportunity and help us to take Ecom Engine to the next level. Feel free to contact our support in case of any inquiry. Verify your email now to get started.
 
     Once again, you are welcome!
 

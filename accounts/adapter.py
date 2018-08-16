@@ -5,9 +5,11 @@ from django.contrib.sites.shortcuts import get_current_site
 class CustomAccountAdapter(DefaultAccountAdapter):
     def send_confirmation_mail(self, request, emailconfirmation, signup):
         current_site = get_current_site(request)
-        activate_url = self.get_email_confirmation_url(
-            request,
-            emailconfirmation)
+        # activate_url = self.get_email_confirmation_url(
+        #     request,
+        #     emailconfirmation)
+
+        activate_url = current_site.domain+'='+emailconfirmation.key
         ctx = {
             "user": emailconfirmation.email_address.user,
             "activate_url": activate_url,
