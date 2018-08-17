@@ -41,6 +41,7 @@ class UserManager(BaseUserManager):
         user.is_admin = True
         user.is_active = True
         user.is_verified = True
+        user.is_superuser = True
         user.set_password(password)
         user.save(using=self._db)
         # Now add this user's email address to EmailAddress table
