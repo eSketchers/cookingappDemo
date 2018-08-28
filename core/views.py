@@ -72,7 +72,8 @@ class ListData(APIView):
                     'vendor'  : content['s:vendor'],
                     'type'    : content['s:type'],
                     's_variants': product_details,
-                    'mul_variants': variants
+                    'mul_variants': variants,
+                    'save_item': False
                 }
                 result.append(data)
 
@@ -89,6 +90,12 @@ class ListData(APIView):
         elif page_res['error']:
             if page_res['status_code'] == 430:
                 return Response(page_res['error'], status=page_res['status_code'])
+            elif page_res['status_code'] == 404:
+                error = "Invalid url."
+                return Response(error, status=page_res['status_code'])
+            elif page_res['status_code'] == 503:
+                error = "Service is unavailable."
+                return Response(error, status=page_res['status_code'])
             else:
                 return Response(page_res['error'], status=page_res['status_code'])
         else:
@@ -129,17 +136,17 @@ class ListData(APIView):
         except requests.exceptions.ConnectionError as errc:
             payload.update({'response': False})
             payload.update({'error': errc})
-            payload.update({'status_code': response.status_code})
+            payload.update({'status_code': status.HTTP_503_SERVICE_UNAVAILABLE})
             return payload
         except requests.exceptions.Timeout as errt:
             payload.update({'response': False})
             payload.update({'error': errt})
-            payload.update({'status_code': response.status_code})
+            payload.update({'status_code': status.HTTP_408_REQUEST_TIMEOUT})
             return payload
         except requests.exceptions.RequestException as err:
             payload.update({'response': False})
             payload.update({'error': err})
-            payload.update({'status_code': response.status_code})
+            payload.update({'status_code': status.HTTP_404_NOT_FOUND})
             return payload
 
 
@@ -384,6 +391,57 @@ class TrainingVideoView(generics.ListAPIView):
     def get_queryset(self):
         queryset = TrainingVideo.objects.filter(is_active=True)
         return queryset
+
+
+class BookmarkProductsView(APIView):
+    """
+       Save/Delete and List bookmarked products.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        qs = BookmarkedProducts.objects.filter(user=request.user)
+        serializer = BookmarkProductSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        response = {}
+        data = request.data[0]
+        qs = BookmarkedProducts.objects.filter(user=request.user,
+                                               title = data['title']).exists()
+        if qs is False:
+            try:
+                BookmarkedProducts.objects.create(user=request.user,
+                                                  title = data['title'],
+                                                  type = data['type'],
+                                                  description = data['details'],
+                                                  img_link = data['img_src'],
+                                                  vendor = data['vendor'],
+                                                  product_link = data['product_link'],
+                                                  price = data['s_variants']['price'],
+                                                  published_at = data['s_variants']['published'],
+                                                  grams = data['s_variants']['grams'],
+                                                  unit = data['s_variants']['unit'],
+                                                  )
+                response.update({'success':True})
+                status_code = status.HTTP_201_CREATED
+            except Exception as e:
+                response.update({'success': False})
+                status_code = status.HTTP_403_FORBIDDEN
+            return Response(response, status=status_code)
+        else:
+            return Response(status=status.HTTP_202_ACCEPTED)
+
+    def get_object(self, pk):
+        try:
+            return BookmarkedProducts.objects.get(id=pk, user=self.request.user)
+        except BookmarkedProducts.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        qs = self.get_object(pk)
+        qs.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

@@ -70,3 +70,11 @@ class TrainingVideoSerializer(serializers.ModelSerializer):
         model = TrainingVideo
         depth = 1
         fields = ('url','group',)
+
+
+class BookmarkProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BookmarkedProducts
+        fields = ('title','type','vendor','img_link','product_link',
+                  'description','created_at',)

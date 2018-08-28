@@ -231,3 +231,29 @@ class TrainingVideo(models.Model):
     def __str__(self):
         return self.group.name
 
+
+class BookmarkedProducts(models.Model):
+    """ Model to save user bookmarked products
+        and show in its daved items
+    """
+    title = models.CharField(max_length=255, blank=False, null=False)
+    type = models.CharField(max_length=255, blank=True, null=True)
+    vendor = models.CharField(max_length=255, blank=True, null=True)
+    img_link = models.CharField(max_length=255, blank=True, null=True)
+    product_link = models.CharField(max_length=255, blank=True, null=True)
+    price = models.FloatField(default=0, null=True, blank=True)
+    grams = models.CharField(max_length=255, blank=True, null=True)
+    unit = models.CharField(max_length=255, blank=True, null=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+    description = models.TextField(max_length=5000, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.vendor
+
+    class Meta:
+        verbose_name = "Bookmarked Product"
+        verbose_name_plural = "Bookmarked Products"

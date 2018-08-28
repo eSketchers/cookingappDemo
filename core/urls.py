@@ -17,5 +17,6 @@ urlpatterns = [
   url(r'^keywords-product/', KeywordProductView.as_view(), name='keyword-product'),
   url(r'^list-group/', VideoGroupView.as_view(), name='list-group'),
   url(r'^list-videos/', TrainingVideoView.as_view(), name='list-videos'),
+  url(r'^save-item/', BookmarkProductsView.as_view(), name='save-items'),
 
 ]
