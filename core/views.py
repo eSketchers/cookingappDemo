@@ -63,6 +63,7 @@ class ListData(APIView):
                                         'price': price,
                                         'unit': unit
                                       }
+                qs = BookmarkedProducts.objects.filter(user=request.user, title=content['title']).exists()
                 data = {
                     'img_src' : src,
                     'product_link':content['link']['@href'],
@@ -73,7 +74,7 @@ class ListData(APIView):
                     'type'    : content['s:type'],
                     's_variants': product_details,
                     'mul_variants': variants,
-                    'save_item': False
+                    'save_item': qs
                 }
                 result.append(data)
 

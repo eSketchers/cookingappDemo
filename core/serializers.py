@@ -76,5 +76,6 @@ class BookmarkProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BookmarkedProducts
-        fields = ('title','type','vendor','img_link','product_link',
+        fields = ('title','type','vendor','img_link','price',
+                  'unit','grams','published_at','product_link',
                   'description','created_at',)
