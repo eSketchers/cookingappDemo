@@ -25,7 +25,7 @@ except ImportError:
 
 from rest_framework import serializers
 from datetime import datetime, timezone
-
+from accounts.forms import PasswordSetForm
 
 # Get the UserModel
 UserModel = get_user_model()
@@ -40,6 +40,7 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'date_of_birth',
                   'address_1', 'address_2', 'picture', 'telephone', 'post_code')
         read_only_fields = ('email',)
+
 
 class CustomRegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
@@ -167,6 +168,18 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
             'extra_email_context': {}
         }
 
+    def save(self):
+        request = self.context.get('request')
+        # Set some values to trigger the send_email method.
+        opts = {
+            # 'use_https': request.is_secure(),
+            'from_email': getattr(settings, 'DEFAULT_FROM_EMAIL'),
+            'request': request,
+        }
+
+        opts.update(self.get_email_options())
+        self.reset_form.save(**opts)
+
 
 class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
     """
@@ -238,3 +251,58 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
         except:
             pass
         return result
+
+
+class TempRegisterSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
+
+    def validate_email(self, email):
+        email = get_adapter().clean_email(email)
+        if allauth_settings.UNIQUE_EMAIL:
+            if email and email_address_exists(email):
+                raise serializers.ValidationError(
+                    _("A user is already registered with this e-mail address."))
+        return email
+
+    def get_cleaned_data(self):
+
+        return {
+            'password1': self.validated_data.get('password1', ''),
+            'email': self.validated_data.get('email', ''),
+        }
+
+    def save(self, request):
+        adapter = get_adapter()
+        user = adapter.new_user(request)
+        self.cleaned_data = self.get_cleaned_data()
+        adapter.save_user(request, user, self)
+        email = setup_user_email(request, user, [])
+        return user
+
+
+class CustomUserCreateSerializer(PasswordResetSerializer):
+    """ Serialzier to create user from manage.py command
+        and send password reset link in email
+    """
+
+    password_reset_form_class = PasswordSetForm
+
+    def get_email_options(self):
+        return {
+            'subject_template_name': 'passwordset/password_set_key_subject.txt',
+            'email_template_name': 'passwordset/password_set_key_message.txt',
+            'html_email_template_name': 'passwordset/password_set_key_message.html',
+            'extra_email_context': {}
+        }
+
+    def save(self):
+        request = self.context.get('request')
+        # Set some values to trigger the send_email method.
+        opts = {
+            # 'use_https': request.is_secure(),
+            'from_email': getattr(settings, 'DEFAULT_FROM_EMAIL'),
+            'request': request,
+        }
+
+        opts.update(self.get_email_options())
+        self.reset_form.save(**opts)
