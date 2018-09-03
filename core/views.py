@@ -14,6 +14,9 @@ from core.client import RestClient
 from core.pagination import LargeResultsSetPagination
 from rest_framework.filters import SearchFilter
 import boto3
+import os, hashlib
+from accounts.models import EmailAddress
+from accounts.serializers import CustomUserCreateSerializer
 
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
@@ -445,5 +448,38 @@ class BookmarkProductsView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ClickFunnelUserCreate(APIView):
+
+    http_method_names = ['post']
+
+    def post(self, request):
+        data = request.data
+        user = self.create_temp_user(data)
+        if user is not None:
+            serializer = CustomUserCreateSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response("User created successfully.", status=status.HTTP_201_CREATED)
+        else:
+            return Response("User already Exist.", status=status.HTTP_409_CONFLICT)
+
+    def create_temp_user(self, data):
+            user = User.objects.filter(email=data['email'])
+            if user.exists() is False:
+                random_data = os.urandom(128)
+                temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
+                user = User.objects.create_user(email=data['email'], password=temp_pwd)
+                user.first_name = data['first_name']
+                user.last_name = data['last_name']
+                user.save()
+
+                email_address = EmailAddress()
+                email_address.user = user
+                email_address.verified = True
+                email_address.primary = True
+                email_address.email = data['email']
+                email_address.save()
+                return user
+            return None
 
 

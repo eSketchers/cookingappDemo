@@ -5,6 +5,8 @@ from allauth.account.models import EmailAddress
 from django.contrib import admin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+import os, hashlib
+from accounts.serializers import CustomUserCreateSerializer
 
 
 class UserAdmin(BaseUserAdmin):
@@ -31,6 +33,22 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
+    def save_model(self, request, obj, form, change):
+        data = dict(email=obj.email)
+        user = User.objects.filter(email=data['email'])
+        if user.exists() is False:
+            obj.save()
+            serializer = CustomUserCreateSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            email_address = EmailAddress()
+            email_address.user = user[0]
+            email_address.verified = True
+            email_address.primary = True
+            email_address.email = data['email']
+            email_address.save()
+        else:
+            obj.save()
 
 admin.site.register(User, UserAdmin)
 

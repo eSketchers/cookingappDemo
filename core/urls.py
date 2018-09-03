@@ -18,6 +18,7 @@ urlpatterns = [
   url(r'^list-group/', VideoGroupView.as_view(), name='list-group'),
   url(r'^list-videos/', TrainingVideoView.as_view(), name='list-videos'),
   url(r'^save-item/', BookmarkProductsView.as_view(), name='save-items'),
+  url(r'^click_create/', ClickFunnelUserCreate.as_view(), name='create-user-click'),
   url(r'^rm-item/(?P<pk>[0-9]+)/$', BookmarkProductsView.as_view(), name='delete-items'),
 
 ]
