@@ -455,6 +455,7 @@ class ClickFunnelUserCreate(APIView):
     def post(self, request):
         data = request.data
         user = self.create_temp_user(data)
+        data = dict(email=data['email'])
         if user is not None:
             serializer = CustomUserCreateSerializer(data=data)
             serializer.is_valid(raise_exception=True)
