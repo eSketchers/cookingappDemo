@@ -462,16 +462,18 @@ class ClickFunnelUserCreate(APIView):
             serializer.save()
             return Response("User created successfully.", status=status.HTTP_201_CREATED)
         else:
-            return Response("User already Exist.", status=status.HTTP_409_CONFLICT)
+            return Response("User already Exist.", status=status.HTTP_202_ACCEPTED)
 
     def create_temp_user(self, data):
+            first_name = data.get('first_name', None)
+            last_name = data.get('last_name', None)
             user = User.objects.filter(email=data['email'])
             if user.exists() is False:
                 random_data = os.urandom(128)
                 temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
                 user = User.objects.create_user(email=data['email'], password=temp_pwd)
-                user.first_name = data['first_name']
-                user.last_name = data['last_name']
+                user.first_name = first_name
+                user.last_name = last_name
                 user.save()
 
                 email_address = EmailAddress()
