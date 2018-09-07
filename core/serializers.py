@@ -6,7 +6,7 @@ class FeedsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RssFeed
-        fields = ('id', 'brand_name', 'brand_url', 'is_favorite',)
+        fields = ('id', 'brand_name', 'brand_url', 'is_favorite','saved_feed')
 
 
 class FavoritesSerializer(serializers.ModelSerializer):
@@ -79,3 +79,16 @@ class BookmarkProductSerializer(serializers.ModelSerializer):
         fields = ('id','title','type','vendor','img_link','price',
                   'unit','grams','published_at','product_link',
                   'description','created_at',)
+
+
+class FeedStoreSerializer(serializers.ModelSerializer):
+    """Serializer to serialize and
+       save store to get its products
+       feeds.
+    """
+
+    class Meta:
+        model = FeedStore
+        depth = 1
+        fields = ('id','feed','user','brand_name',
+                  'brand_url','feed', )

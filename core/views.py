@@ -449,11 +449,17 @@ class BookmarkProductsView(APIView):
 
 
 class ClickFunnelUserCreate(APIView):
+    """Create user by getting its email from
+       webhook send by click funnels on
+       purchase and send email to user for password set.
 
+       :param APIVIEW: Inherit generic view.
+       :return response: created user with email sent.
+    """
     http_method_names = ['post']
 
     def post(self, request):
-        data = request.data
+        data = request.data # get data object from request.
         user = self.create_temp_user(data)
         data = dict(email=data['email'])
         if user is not None:
@@ -485,4 +491,49 @@ class ClickFunnelUserCreate(APIView):
                 return user
             return None
 
+
+class FeedlyView(APIView):
+    """User list, save and delete their searched store
+       form feedStore model.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        feeds = FeedStore.objects.filter(user=request.user)
+        serializer = FeedStoreSerializer(feeds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        response = {}
+        feeds_count = FeedStore.objects.filter(user=request.user).count()
+        if feeds_count < 10:
+            try:
+                FeedStore.objects.create(user=request.user,
+                                         feed_id = request.data['id'],
+                                         brand_url = request.data['brand_url'],
+                                         brand_name = request.data['brand-name'],
+                                         )
+                RssFeed.objects.filter(id=request.data['id']).update(saved_feed=True)
+                response.update({'success':True})
+                status_code = status.HTTP_201_CREATED
+            except Exception as e:
+                response.update({'success': False})
+                status_code = status.HTTP_403_FORBIDDEN
+        else:
+            response.update({'Message': "You have reached maximium limit to add store into your feeds."})
+            status_code = status.HTTP_200_OK
+
+        return Response(response, status=status_code)
+
+    def get_object(self, pk):
+        try:
+            return FeedStore.objects.get(feed_id=pk, user=self.request.user)
+        except RssFeed.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        obj.delete()
+        RssFeed.objects.filter(pk=pk).update(saved_feed=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 

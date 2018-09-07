@@ -20,5 +20,7 @@ urlpatterns = [
   url(r'^save-item/', BookmarkProductsView.as_view(), name='save-items'),
   url(r'^click_create/', ClickFunnelUserCreate.as_view(), name='create-user-click'),
   url(r'^rm-item/(?P<pk>[0-9]+)/$', BookmarkProductsView.as_view(), name='delete-items'),
+  url(r'^feedstore/$', FeedlyView.as_view(), name='feed-stores'),
+  url(r'^feedstore/d/(?P<pk>[0-9]+)/$', FeedlyView.as_view(), name='remove-feeds'),
 
 ]
