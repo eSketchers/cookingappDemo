@@ -81,12 +81,13 @@ class Command(BaseCommand):
                 except Exception as e:
                     print("Error:"+str(e))
                     print('At Url {0}.'.format(url_obj.brand_url))
-                    cron.delete()
                     raise CommandError(e)
+                    continue
 
             print("Inserted" + ' ' + str(_urls_count) + '  ' + "products details Successfully.")
             cron.status = True
             cron.save()
+            cron.delete()
             end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
             total_time = (datetime.datetime.strptime(end_time, '%H:%M:%S') - datetime.datetime.strptime(start_time, '%H:%M:%S'))
             self.stdout.write('The task took {0} second !'.format(total_time))
