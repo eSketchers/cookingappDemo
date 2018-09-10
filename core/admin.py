@@ -61,8 +61,12 @@ class TrainingVideoAdmin(admin.ModelAdmin):
     search_fields = ('group',)
 
 
+class RssFeedAdmin(admin.ModelAdmin):
+    list_display = ['brand_name', 'brand_url', 'user']
+    search_fields = ('brand_url','brand_name')
+
 # Register your models here.
-admin.site.register(RssFeed)
+admin.site.register(RssFeed, RssFeedAdmin)
 admin.site.register(FavoriteSite)
 admin.site.register(Influencer, InfluencerAdmin)
 admin.site.register(CustomProduct, CustomProductAdmin)
