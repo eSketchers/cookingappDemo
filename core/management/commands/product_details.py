@@ -81,7 +81,6 @@ class Command(BaseCommand):
                 except Exception as e:
                     print("Error:"+str(e))
                     print('At Url {0}.'.format(url_obj.brand_url))
-                    raise CommandError(e)
                     continue
 
             print("Inserted" + ' ' + str(_urls_count) + '  ' + "products details Successfully.")
