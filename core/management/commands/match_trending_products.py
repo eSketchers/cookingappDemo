@@ -82,7 +82,6 @@ class Command(BaseCommand):
                     TrendingProduct.objects.create(user_id=user.user_id, data=data)
             except Exception as e:
                 print("Error:" + str(e))
-                raise CommandError(e)
                 continue
 
         print("Inserted trending products json Successfully.")
