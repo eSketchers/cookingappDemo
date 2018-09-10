@@ -70,7 +70,7 @@ admin.site.register(FeedBack, FeedBackAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 
 
-admin.site.unregister(CronStatus)
+admin.site.register(CronStatus)
 # admin.site.register(TrendingProduct)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
