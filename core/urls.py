@@ -22,5 +22,6 @@ urlpatterns = [
   url(r'^rm-item/(?P<pk>[0-9]+)/$', BookmarkProductsView.as_view(), name='delete-items'),
   url(r'^feedstore/$', FeedlyView.as_view(), name='feed-stores'),
   url(r'^feedstore/d/(?P<pk>[0-9]+)/$', FeedlyView.as_view(), name='remove-feeds'),
+  url(r'^products/feed/$', ProductsFeedView.as_view(), name='products-feed'),
 
 ]

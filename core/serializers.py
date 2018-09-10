@@ -92,3 +92,12 @@ class FeedStoreSerializer(serializers.ModelSerializer):
         depth = 1
         fields = ('id','feed','user','brand_name',
                   'brand_url','feed', )
+
+
+class ProductFeedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FeedProducts
+        fields = ('title','type','vendor','img_link','description',
+                  'product_link','published_at','price',
+                  'unit','grams','created_at',)

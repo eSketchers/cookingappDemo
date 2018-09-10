@@ -494,7 +494,7 @@ class ClickFunnelUserCreate(APIView):
 
 class FeedlyView(APIView):
     """User list, save and delete their searched store
-       form feedStore model.
+       from feedStore model.
     """
     permission_classes = (IsAuthenticated,)
 
@@ -537,3 +537,19 @@ class FeedlyView(APIView):
         RssFeed.objects.filter(pk=pk).update(saved_feed=False)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class ProductsFeedView(generics.ListAPIView):
+    """List all products of requested store."""
+
+    serializer_class = ProductFeedSerializer
+    pagination_class = LargeResultsSetPagination
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        params = self.request.query_params
+        if 'id' in params:
+            store_id = int(params['id'])
+            queryset = FeedProducts.objects.filter(user=self.request.user.id, store=store_id).order_by('created_at')
+        else:
+            queryset = FeedProducts.objects.none()
+        return queryset
