@@ -288,8 +288,8 @@ class FeedStore(models.Model):
 
 
 class FeedProducts(models.Model):
-    """ Model to save user Feed products
-        and show in its Feeds
+    """ Model to save user FeedStore model products
+        and show products as a feeds.
     """
     title = models.CharField(db_index=True, max_length=255, blank=False, null=False)
     type = models.CharField(db_index=True, max_length=255, blank=True, null=True)
@@ -302,6 +302,7 @@ class FeedProducts(models.Model):
     published_at = models.DateTimeField(null=True, blank=True)
     description = models.TextField(max_length=5000, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    store = models.ForeignKey(FeedStore, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
