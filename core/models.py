@@ -113,6 +113,10 @@ class CronStatus(models.Model):
     def __str__(self):
         return self.job_name
 
+    class Meta:
+        verbose_name = 'Cron job'
+        verbose_name_plural = 'Cron jobs'
+
 
 class Influencer(models.Model):
 
