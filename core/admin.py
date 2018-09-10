@@ -65,6 +65,11 @@ class RssFeedAdmin(admin.ModelAdmin):
     list_display = ['brand_name', 'brand_url', 'user']
     search_fields = ('brand_url','brand_name')
 
+
+class TrendingProductAdmin(admin.ModelAdmin):
+    list_display = ['user','created_at','updated_at']
+    search_fields = ('user',)
+
 # Register your models here.
 admin.site.register(RssFeed, RssFeedAdmin)
 admin.site.register(FavoriteSite)
@@ -72,10 +77,9 @@ admin.site.register(Influencer, InfluencerAdmin)
 admin.site.register(CustomProduct, CustomProductAdmin)
 admin.site.register(FeedBack, FeedBackAdmin)
 admin.site.register(Keyword, KeywordAdmin)
-
+admin.site.register(TrendingProduct, TrendingProductAdmin)
 
 admin.site.register(CronStatus)
-# admin.site.register(TrendingProduct)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
 # admin.site.unregister(VideoGroup, GroupAdmin)
