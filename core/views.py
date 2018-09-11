@@ -546,10 +546,5 @@ class ProductsFeedView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        params = self.request.query_params
-        if 'id' in params:
-            store_id = int(params['id'])
-            queryset = FeedProducts.objects.filter(user=self.request.user.id, store=store_id).order_by('created_at')
-        else:
-            queryset = FeedProducts.objects.none()
+        queryset = FeedProducts.objects.filter(user=self.request.user.id).order_by('created_at')
         return queryset
