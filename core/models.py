@@ -304,7 +304,7 @@ class FeedProducts(models.Model):
     grams = models.CharField(max_length=255, blank=True, null=True)
     unit = models.CharField(max_length=255, blank=True, null=True)
     published_at = models.DateTimeField(null=True, blank=True)
-    description = models.TextField(max_length=5000, null=True, blank=True)
+    description = models.TextField(max_length=10000, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     store = models.ForeignKey(FeedStore, on_delete=models.CASCADE)
 
