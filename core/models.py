@@ -295,11 +295,11 @@ class FeedProducts(models.Model):
     """ Model to save user FeedStore model products
         and show products as a feeds.
     """
-    title = models.CharField(db_index=True, max_length=255, blank=False, null=False)
-    type = models.CharField(db_index=True, max_length=255, blank=True, null=True)
+    title = models.CharField(db_index=True, max_length=500, blank=False, null=False)
+    type = models.CharField(db_index=True, max_length=500, blank=True, null=True)
     vendor = models.CharField(db_index=True, max_length=255, blank=True, null=True)
-    img_link = models.CharField(db_index=True, max_length=255, blank=True, null=True)
-    product_link = models.CharField(db_index=True, max_length=255, blank=True, null=True)
+    img_link = models.CharField(db_index=True, max_length=500, blank=True, null=True)
+    product_link = models.CharField(db_index=True, max_length=500, blank=True, null=True)
     price = models.FloatField(default=0, null=True, blank=True)
     grams = models.CharField(max_length=255, blank=True, null=True)
     unit = models.CharField(max_length=255, blank=True, null=True)
