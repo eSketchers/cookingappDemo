@@ -325,7 +325,7 @@ class CustomProductList(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
-        queryset = CustomProduct.objects.all().order_by('created_at')
+        queryset = CustomProduct.objects.filter(is_active=True).order_by('created_at')
         return queryset
 
 

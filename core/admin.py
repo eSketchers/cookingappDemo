@@ -22,8 +22,8 @@ class InfluencerAdmin(admin.ModelAdmin):
 
 
 class CustomProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'type',]
-    exclude = ('profit',)
+    list_display = ['title', 'type', 'released_date','is_active']
+    exclude = ('profit','is_active')
     search_fields = ('title',)
 
     def save_model(self, request, obj, form, change):
@@ -78,9 +78,10 @@ admin.site.register(CustomProduct, CustomProductAdmin)
 admin.site.register(FeedBack, FeedBackAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(TrendingProduct, TrendingProductAdmin)
+admin.site.register(VideoGroup, GroupAdmin)
+admin.site.register(TrainingVideo, TrainingVideoAdmin)
 
-admin.site.register(CronStatus)
+# admin.site.unregister(CronStatus)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
-# admin.site.unregister(VideoGroup, GroupAdmin)
-# admin.site.unregister(TrainingVideo, TrainingVideoAdmin)
+
