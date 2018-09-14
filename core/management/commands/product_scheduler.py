@@ -15,8 +15,8 @@ class Command(BaseCommand):
         products = CustomProduct.objects.filter(is_active=False,released_date__year=today.year, released_date__month=today.month, released_date__day=today.day)
         for prod in products:
             prod.is_active = True
-            print(prod.title + ' ' + " is released on " + prod.released_date)
-            print(prod.title+' '+" is released succesfully. "+today)
+            print(prod.title + ' ' + " is released on " + str(prod.released_date))
+            print(prod.title+' '+" is released succesfully. "+str(today))
             prod.save()
         end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
         total_time = (datetime.datetime.strptime(end_time, '%H:%M:%S') - datetime.datetime.strptime(start_time, '%H:%M:%S'))
