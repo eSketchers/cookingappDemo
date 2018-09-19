@@ -69,7 +69,7 @@ class TrainingVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingVideo
         depth = 1
-        fields = ('url','group',)
+        fields = ('id','title', 'embed', 'thumbnail', 'group','created_at')
 
 
 class BookmarkProductSerializer(serializers.ModelSerializer):

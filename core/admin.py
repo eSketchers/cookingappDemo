@@ -1,5 +1,7 @@
 from django.contrib import admin
 from core.models import *
+from bs4 import BeautifulSoup
+import requests, xmltodict
 
 
 # class MyModelAdmin(admin.ModelAdmin):
@@ -57,8 +59,23 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class TrainingVideoAdmin(admin.ModelAdmin):
-    list_display = ['group','is_active','created_at']
-    search_fields = ('group',)
+    list_display = ['title', 'group','is_active','created_at']
+    search_fields = ('title', 'group',)
+    exclude = ('thumbnail',)
+
+    def save_model(self, request, obj, form, change):
+        try:
+            soup = BeautifulSoup(obj.embed, 'html.parser')
+            tag = soup.find_all('iframe')[0]
+            video_src = tag['src']
+            id = video_src.split("/")
+            link = "http://vimeo.com/api/v2/video/"+id[4]+".xml"
+            response = requests.get(link)
+            res_dict = xmltodict.parse(response.text)
+            obj.thumbnail = res_dict['videos']['video']['thumbnail_large']
+        except Exception as e:
+            pass
+        obj.save()
 
 
 class RssFeedAdmin(admin.ModelAdmin):

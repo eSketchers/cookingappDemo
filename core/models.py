@@ -226,7 +226,10 @@ class VideoGroup(models.Model):
 
 class TrainingVideo(models.Model):
 
-    url = models.CharField(max_length=255, blank=True, null=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    embed = models.CharField(max_length=500, blank=True, null=True)
+    thumbnail = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(max_length=1000, blank=True, null=True)
     group = models.ForeignKey('VideoGroup', related_name='video_group', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
 
@@ -238,7 +241,7 @@ class TrainingVideo(models.Model):
         verbose_name_plural = 'Videos'
 
     def __str__(self):
-        return self.group.name
+        return self.title
 
 
 class BookmarkedProducts(models.Model):

@@ -393,7 +393,7 @@ class TrainingVideoView(generics.ListAPIView):
     serializer_class = TrainingVideoSerializer
 
     def get_queryset(self):
-        queryset = TrainingVideo.objects.filter(is_active=True)
+        queryset = TrainingVideo.objects.filter(is_active=True).order_by('-created_at')
         return queryset
 
 
@@ -536,6 +536,25 @@ class FeedlyView(APIView):
         obj.delete()
         RssFeed.objects.filter(pk=pk).update(saved_feed=False)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TrainingVideoDetailView(generics.ListAPIView):
+    """View to list detail of training video.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains video related to group name.
+    """
+
+    serializer_class = TrainingVideoSerializer
+
+    def get_queryset(self):
+        video_id = self.request.query_params['id']
+        if video_id is not None:
+            queryset = TrainingVideo.objects.filter(pk=int(video_id), is_active=True)
+        else:
+            queryset = TrainingVideo.objects.none()
+        return queryset
 
 
 class ProductsFeedView(generics.ListAPIView):
