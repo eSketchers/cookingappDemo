@@ -410,7 +410,7 @@ class BookmarkProductsView(APIView):
 
     def post(self, request, format=None):
         response = {}
-        data = request.data[0]
+        data = request.data
         qs = BookmarkedProducts.objects.filter(user=request.user,
                                                title = data['title']).exists()
         if qs is False:
