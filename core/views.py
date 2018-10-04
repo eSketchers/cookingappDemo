@@ -95,10 +95,10 @@ class ListData(APIView):
             if page_res['status_code'] == 430:
                 return Response(page_res['error'], status=page_res['status_code'])
             elif page_res['status_code'] == 404:
-                error = "Invalid url."
+                error = "Store url is invalid."
                 return Response(error, status=page_res['status_code'])
             elif page_res['status_code'] == 503:
-                error = "Service is unavailable."
+                error = "Store is currently down or having some other issues. Try later"
                 return Response(error, status=page_res['status_code'])
             else:
                 return Response(page_res['error'], status=page_res['status_code'])
