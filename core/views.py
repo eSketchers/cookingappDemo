@@ -25,7 +25,9 @@ comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
 
 class ListData(APIView):
-
+    """Get Xml of input store and
+       list its products feeds into feeds component.
+    """
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -155,8 +157,8 @@ class ListData(APIView):
 
 
 class ListRss(APIView):
-    """
-       List all searched urls of specific user.
+    """ Show all searched urls of specific user,
+        in his Stores component.
     """
     permission_classes = (IsAuthenticated,)
 
