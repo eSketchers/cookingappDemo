@@ -278,57 +278,66 @@ class InfluencerList(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('^username',)
+    queryset = Influencer.objects.filter(info=True).order_by('-created_at')
 
     def get_queryset(self):
         min_range = self.request.query_params.get('min_range',None)
         max_range = self.request.query_params.get('max_range',None)
-        category  = self.request.query_params.get('category',None)
+        category = self.request.query_params.get('category',None)
 
         if min_range and max_range and category:
-            queryset = Influencer.objects.filter(followed_by__gte=int(min_range),
+            self.queryset = self.queryset.filter(followed_by__gte=int(min_range),
                                                  followed_by__lte=int(max_range),
                                                  type=category).order_by('created_at')
-            return queryset
-
         elif min_range and max_range:
-            queryset = Influencer.objects.filter(followed_by__gte=int(min_range),
+            self.queryset = self.queryset.filter(followed_by__gte=int(min_range),
                                                  followed_by__lte=int(max_range)).order_by('created_at')
-            return queryset
 
         elif min_range and category:
-            queryset = Influencer.objects.filter(followed_by__lte=int(min_range),
+            self.queryset = self.queryset.filter(followed_by__gte=int(min_range),
                                                  type=category).order_by('created_at')
-            return queryset
 
         elif min_range:
-            queryset = Influencer.objects.filter(followed_by__lte=int(min_range)).order_by('created_at')
-            return queryset
-
-        elif max_range:
-            queryset = Influencer.objects.filter(followed_by__gte=int(max_range)).order_by('created_at')
-            return queryset
-
-        elif max_range and category:
-            queryset = Influencer.objects.filter(followed_by__gte=int(max_range),
-                                                 type=category).order_by('created_at')
-            return queryset
+            self.queryset = self.queryset.filter(followed_by__gte=int(min_range)).order_by('created_at')
 
         elif category:
-            queryset = Influencer.objects.filter(type=category).order_by('created_at')
-            return queryset
-        else:
-            queryset = Influencer.objects.filter(info=True).order_by('created_at')
-            return queryset
+            self.queryset = self.queryset.filter(type=category).order_by('created_at')
+
+        return self.queryset
+
 
 
 class CustomProductList(generics.ListAPIView):
 
     serializer_class = CustomProductSerializer
     pagination_class = LargeResultsSetPagination
+    queryset = CustomProduct.objects.filter(is_active=True).order_by('-created_at')
 
     def get_queryset(self):
-        queryset = CustomProduct.objects.filter(is_active=True).order_by('created_at')
-        return queryset
+        min_range = self.request.query_params.get('min_range', None)
+        max_range = self.request.query_params.get('max_range', None)
+        order = self.request.query_params.get('order_by', None)
+
+
+
+        if (min_range and max_range):
+            self.queryset = self.queryset.filter(selling_price__range=(min_range, max_range))
+        elif (min_range and not max_range):
+            self.queryset = self.queryset.filter(selling_price__gte=min_range)
+
+        if (order):
+            # lp = lowest price
+            # hp = highest price
+            # da = date added price
+
+            if(order == 'lp'):
+                self.queryset = self.queryset.order_by('selling_price')
+            elif (order == 'hp'):
+                self.queryset = self.queryset.order_by('-selling_price')
+            # elif (order == 'da'):
+            #     self.queryset = self.queryset.order_by('-created_at')
+
+        return self.queryset
 
 
 class FeedBackView(APIView):
