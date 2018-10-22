@@ -34,17 +34,17 @@ class Command(BaseCommand):
                                 response = response.read()
                         except urllib.request.HTTPError as e:
                             if hasattr(e, 'reason'):
-                                print('HTTP ERROR {0}'.format(url_obj.url))
+                                print('HTTP ERROR from: {0} for the reason: {1}'.format(url, e.reason))
                                 print('Reason: ', e.reason)
                             continue
                         except urllib.request.URLError as e:
                             if hasattr(e, 'reason'):
-                                print('Response ERROR {0}'.format(url_obj.url))
+                                print('Response ERROR from: {0} for the reason: {1}'.format(url, e.reason))
                                 print('Reason: ', e.reason)
                             continue
                         except Exception as e:
                             if hasattr(e, 'reason'):
-                                print('Exception ERROR of {0}'.format(url_obj.url))
+                                print('Exception ERROR of: {0} for the reason: {1}'.format(url, e.reason))
                                 print('Reason: ', e.reason)
                             continue
 

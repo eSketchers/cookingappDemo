@@ -275,8 +275,8 @@ class FeedStore(models.Model):
     """Store user shopify url
     to get store products details.
     """
-    brand_name = models.CharField(db_index=True, max_length=255, null=False, blank=False)
-    brand_url = models.CharField(db_index=True, max_length=255, null=False, blank=False)
+    brand_name = models.CharField(max_length=255, null=False, blank=False)
+    brand_url = models.CharField(max_length=255, null=False, blank=False)
     user = models.ForeignKey(User,
                              related_name='user_feed',
                              on_delete=models.CASCADE
