@@ -39,7 +39,7 @@ class CustomProductSerializer(serializers.ModelSerializer):
         model = CustomProduct
         fields = ('title','type','vendor','image','video','description',
                   'product_link','ali_express','actual_price',
-                  'selling_price','profit','created_at',)
+                  'selling_price','profit', 'released_date',)
 
 
 class KeywordSerializer(serializers.ModelSerializer):
