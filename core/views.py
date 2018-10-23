@@ -17,6 +17,11 @@ import boto3
 import os, hashlib
 from accounts.models import EmailAddress
 from accounts.serializers import CustomUserCreateSerializer
+import logging
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
 headers = {'User-Agent': user_agent, }
@@ -67,7 +72,7 @@ class ListData(APIView):
                                         'grams': content['s:variant']['s:grams'],
                                         'price': price,
                                         'unit': unit
-                                      }
+                                        }
                 qs = BookmarkedProducts.objects.filter(user=request.user, title=content['title']).exists()
                 data = {
                     'img_src' : src,
@@ -84,13 +89,13 @@ class ListData(APIView):
                 result.append(data)
 
             favorite = RssFeed.objects.filter(brand_name=page_res['response']['feed']['title'],
-                                                    user=request.user).exists()
+                                              user=request.user).exists()
             if not favorite:
                 RssFeed.objects.create(
-                                    brand_name = page_res['response']['feed']['title'],
-                                    brand_url = page_res['response']['feed']['id'].split("/collections")[0],
-                                    user    = request.user
-                                    )
+                    brand_name = page_res['response']['feed']['title'],
+                    brand_url = page_res['response']['feed']['id'].split("/collections")[0],
+                    user    = request.user
+                )
             return Response(result, status=status.HTTP_200_OK)
 
         elif page_res['error']:
@@ -183,8 +188,8 @@ class FavoriteFeeds(APIView):
         response = {}
         try:
             FavoriteSite.objects.create(user=request.user,
-                                         feed_id = request.data['id']
-                                         )
+                                        feed_id = request.data['id']
+                                        )
             RssFeed.objects.filter(id=request.data['id']).update(is_favorite=True)
             response.update({'success':True})
             status_code = status.HTTP_201_CREATED
@@ -310,8 +315,12 @@ class InfluencerList(generics.ListAPIView):
 class CustomProductList(generics.ListAPIView):
 
     serializer_class = CustomProductSerializer
+    permission_classes = (IsAuthenticated,)
     pagination_class = LargeResultsSetPagination
     queryset = CustomProduct.objects.filter(is_active=True).order_by('-created_at')
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def get_queryset(self):
         min_range = self.request.query_params.get('min_range', None)
@@ -334,8 +343,8 @@ class CustomProductList(generics.ListAPIView):
                 self.queryset = self.queryset.order_by('selling_price')
             elif (order == 'hp'):
                 self.queryset = self.queryset.order_by('-selling_price')
-            # elif (order == 'da'):
-            #     self.queryset = self.queryset.order_by('-created_at')
+                # elif (order == 'da'):
+                #     self.queryset = self.queryset.order_by('-created_at')
 
         return self.queryset
 
@@ -421,23 +430,40 @@ class BookmarkProductsView(APIView):
 
     def post(self, request, format=None):
         response = {}
-        data = request.data
+        req_data = request.data
+        data = req_data['product']
+        type = req_data['type']
+
+        product = {
+            'user': request.user,
+            'title': '',
+            'type': '',
+            'description': '',
+            'img_link': '',
+            'vendor': '',
+            'product_link': '',
+            'price': '',
+            'published_at': '',
+            'grams': '',
+            'unit': '',
+        }
+
+        if type == 'explore':
+            product = self.map_parsed_product(data, product)
+        elif type == 'hot':
+            product = self.map_hot_product(data, product)
+        elif type == 'feed':
+            product = self.map_feed_product(data, product)
+
+
+
+
         qs = BookmarkedProducts.objects.filter(user=request.user,
-                                               title = data['title']).exists()
+                                               title = product['title']).exists()
         if qs is False:
             try:
-                BookmarkedProducts.objects.create(user=request.user,
-                                                  title = data['title'],
-                                                  type = data['type'],
-                                                  description = data['details'],
-                                                  img_link = data['img_src'],
-                                                  vendor = data['vendor'],
-                                                  product_link = data['product_link'],
-                                                  price = data['s_variants']['price'],
-                                                  published_at = data['s_variants']['published'],
-                                                  grams = data['s_variants']['grams'],
-                                                  unit = data['s_variants']['unit'],
-                                                  )
+                created_product = BookmarkedProducts(**product)
+                created_product.save()
                 response.update({'success':True})
                 status_code = status.HTTP_201_CREATED
             except Exception as e:
@@ -457,6 +483,55 @@ class BookmarkProductsView(APIView):
         qs = self.get_object(pk)
         qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def map_parsed_product(self, data, product):
+        try:
+            product['title'] = data['title']
+            product['type'] = data['type']
+            product['description'] = data['details']
+            product['img_link'] = data['img_src']
+            product['vendor'] = data['vendor']
+            product['product_link'] = data['product_link']
+            product['price'] =  data['s_variants']['price']
+            product['published_at'] = data['s_variants']['published']
+            product['grams'] = data['s_variants']['grams']
+            product['unit'] = data['s_variants']['unit']
+        except Exception as e:
+            logger.debug('product mapping error {0}', e)
+
+        return product
+
+    def map_hot_product(self, data, product):
+        try:
+            product['title'] = data['title']
+            product['type'] = data['type']
+            product['description'] = data['description']
+            product['img_link'] = data['image']
+            product['vendor'] = data['vendor']
+            product['product_link'] = data['product_link']
+            product['price'] = data['actual_price']
+            product['published_at'] = data['released_date']
+        except Exception as e:
+            logger.debug('product mapping error {0}', e)
+
+        return product
+
+    def map_feed_product(self, data, product):
+        try:
+            product['title'] = data['title']
+            product['type'] = data['type']
+            product['description'] = data['description']
+            product['img_link'] = data['img_link']
+            product['vendor'] = data['vendor']
+            product['product_link'] = data['product_link']
+            product['price'] = data['price']
+            product['published_at'] = data['published_at']
+            product['grams'] = data['grams']
+            product['unit'] = data['unit']
+        except Exception as e:
+            logger.debug('product mapping error {0}', e)
+
+        return product
 
 
 class ClickFunnelUserCreate(APIView):
@@ -482,25 +557,25 @@ class ClickFunnelUserCreate(APIView):
             return Response("User already Exist.", status=status.HTTP_202_ACCEPTED)
 
     def create_temp_user(self, data):
-            first_name = data.get('first_name', None)
-            last_name = data.get('last_name', None)
-            user = User.objects.filter(email=data['email'])
-            if user.exists() is False:
-                random_data = os.urandom(128)
-                temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
-                user = User.objects.create_user(email=data['email'], password=temp_pwd)
-                user.first_name = first_name
-                user.last_name = last_name
-                user.save()
+        first_name = data.get('first_name', None)
+        last_name = data.get('last_name', None)
+        user = User.objects.filter(email=data['email'])
+        if user.exists() is False:
+            random_data = os.urandom(128)
+            temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
+            user = User.objects.create_user(email=data['email'], password=temp_pwd)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
 
-                email_address = EmailAddress()
-                email_address.user = user
-                email_address.verified = True
-                email_address.primary = True
-                email_address.email = data['email']
-                email_address.save()
-                return user
-            return None
+            email_address = EmailAddress()
+            email_address.user = user
+            email_address.verified = True
+            email_address.primary = True
+            email_address.email = data['email']
+            email_address.save()
+            return user
+        return None
 
 
 class FeedlyView(APIView):

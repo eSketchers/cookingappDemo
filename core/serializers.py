@@ -34,13 +34,16 @@ class InfluencerSerializer(serializers.ModelSerializer):
 
 
 class CustomProductSerializer(serializers.ModelSerializer):
+    save_item = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomProduct
         fields = ('title','type','vendor','image','video','description',
                   'product_link','ali_express','actual_price',
-                  'selling_price','profit', 'released_date',)
+                  'selling_price','profit', 'released_date', 'save_item',)
 
+    def get_save_item(self, obj):
+        return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
 
 class KeywordSerializer(serializers.ModelSerializer):
 
