@@ -98,7 +98,8 @@ admin.site.register(TrendingProduct, TrendingProductAdmin)
 admin.site.register(VideoGroup, GroupAdmin)
 admin.site.register(TrainingVideo, TrainingVideoAdmin)
 
-# admin.site.unregister(CronStatus)
+admin.site.unregister(CronStatus)
+admin.site.unregister(FeedStore)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
 
