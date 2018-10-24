@@ -497,7 +497,8 @@ class BookmarkProductsView(APIView):
             product['grams'] = data['s_variants']['grams']
             product['unit'] = data['s_variants']['unit']
         except Exception as e:
-            logger.debug('product mapping error {0}', e)
+            pass
+            # logger.debug('product mapping error {0}', e)
 
         return product
 
@@ -512,7 +513,8 @@ class BookmarkProductsView(APIView):
             product['price'] = data['actual_price']
             product['published_at'] = data['released_date']
         except Exception as e:
-            logger.debug('product mapping error {0}', e)
+            pass
+            # logger.debug('product mapping error {0}', e)
 
         return product
 
@@ -529,7 +531,8 @@ class BookmarkProductsView(APIView):
             product['grams'] = data['grams']
             product['unit'] = data['unit']
         except Exception as e:
-            logger.debug('product mapping error {0}', e)
+            pass
+            # logger.debug('product mapping error {0}', e)
 
         return product
 
