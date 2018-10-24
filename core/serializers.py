@@ -98,9 +98,13 @@ class FeedStoreSerializer(serializers.ModelSerializer):
 
 
 class ProductFeedSerializer(serializers.ModelSerializer):
+    save_item = serializers.SerializerMethodField()
 
     class Meta:
         model = FeedProducts
         fields = ('title','type','vendor','img_link','description',
                   'product_link','published_at','price',
-                  'unit','grams','created_at',)
+                  'unit','grams','created_at', 'save_item',)
+
+    def get_save_item(self, obj):
+        return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
