@@ -60,7 +60,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/home/ubuntu/webapps/logs/debug.log',
+            'filename': '/home/ubuntu/webapps/logs/dsd_logs/debug.log',
         },
     },
     'loggers': {
