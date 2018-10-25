@@ -19,7 +19,6 @@ class Command(BaseCommand):
         print('Task start time: {0} '.format(start_time))
         cron_name = "Get user feed products."
         cron, created = CronStatus.objects.get_or_create(job_name = cron_name)
-        _urls_count = 0
         if created:
             users = EmailAddress.objects.filter(verified = True, user__is_admin = False)
             for user in users:
@@ -36,7 +35,7 @@ class Command(BaseCommand):
                             print('Exception ERROR of: {0} for the reason: {1}'.format(url_obj.brand_url, e))
                             continue
                         self.parse_product(pars_response, user, url_obj)
-            print("Inserted" + ' ' + str(_urls_count) + '  ' + "products details Successfully.")
+                print("Inserted {0} products details Successfully.".format(str(_urls_count)))
             cron.delete()
             end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
             total_time = (datetime.datetime.strptime(end_time, '%H:%M:%S') - datetime.datetime.strptime(start_time, '%H:%M:%S'))
