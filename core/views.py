@@ -36,67 +36,10 @@ class ListData(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        result = []
-        variants = []
-        product_details = {}
         url = request.data['link']
         page_res = self.get_page(url)
         if page_res['response']:
-            for content in page_res['response']['feed']['entry']:
-                soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
-                src = soup.find_all("img")[0].attrs['src']
-                tb_data = soup.find('table').find_all('tr')[1].find('td')
-                p_tag = tb_data.find_all("p", limit=2)
-                if len(p_tag) == 2:
-                    para_tag = str(p_tag[0]) + str(p_tag[1])
-                elif len(p_tag) == 1:
-                    para_tag = str(p_tag[0])
-                else:
-                    para_tag = tb_data.get_text()
-                if isinstance(content['s:variant'], list):
-                    variants = []
-                    variants.append(content['s:variant'])
-                    price = float(content['s:variant'][0]['s:price']['#text'])
-                    unit = content['s:variant'][0]['s:price']['@currency']
-
-                    product_details = {'published': content['published'],
-                                       'grams': content['s:variant'][0]['s:grams'],
-                                       'price': price,
-                                       'unit': unit
-                                       }
-
-                else:
-                    price = float(content['s:variant']['s:price']['#text'])
-                    unit = content['s:variant']['s:price']['@currency']
-                    product_details = { 'published': content['published'],
-                                        'grams': content['s:variant']['s:grams'],
-                                        'price': price,
-                                        'unit': unit
-                                        }
-                qs = BookmarkedProducts.objects.filter(user=request.user, title=content['title']).exists()
-                data = {
-                    'img_src' : src,
-                    'product_link':content['link']['@href'],
-                    'product_keyword':content['link']['@href'].split('/')[-1],
-                    'details' : para_tag,
-                    'title': content['title'],
-                    'vendor'  : content['s:vendor'],
-                    'type'    : content['s:type'],
-                    's_variants': product_details,
-                    'mul_variants': variants,
-                    'save_item': qs
-                }
-                result.append(data)
-
-            favorite = RssFeed.objects.filter(brand_name=page_res['response']['feed']['title'],
-                                              user=request.user).exists()
-            if not favorite:
-                RssFeed.objects.create(
-                    brand_name = page_res['response']['feed']['title'],
-                    brand_url = page_res['response']['feed']['id'].split("/collections")[0],
-                    user    = request.user
-                )
-            return Response(result, status=status.HTTP_200_OK)
+            return self.get_product_feeds(page_res)
 
         elif page_res['error']:
             if page_res['status_code'] == 430:
@@ -112,6 +55,67 @@ class ListData(APIView):
         else:
             url_error = "Response of url is not available."
             return Response(url_error, status=status.HTTP_404_NOT_FOUND)
+
+    def get_product_feeds(self, page_res):
+        result = []
+        variants = []
+        product_details = {}
+
+        for content in page_res['response']['feed']['entry']:
+            soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
+            src = soup.find_all("img")[0].attrs['src']
+            tb_data = soup.find('table').find_all('tr')[1].find('td')
+            p_tag = tb_data.find_all("p", limit=2)
+            if len(p_tag) == 2:
+                para_tag = str(p_tag[0]) + str(p_tag[1])
+            elif len(p_tag) == 1:
+                para_tag = str(p_tag[0])
+            else:
+                para_tag = tb_data.get_text()
+            if isinstance(content['s:variant'], list):
+                variants = []
+                variants.append(content['s:variant'])
+                price = float(content['s:variant'][0]['s:price']['#text'])
+                unit = content['s:variant'][0]['s:price']['@currency']
+
+                product_details = {'published': content['published'],
+                                   'grams': content['s:variant'][0]['s:grams'],
+                                   'price': price,
+                                   'unit': unit
+                                   }
+
+            else:
+                price = float(content['s:variant']['s:price']['#text'])
+                unit = content['s:variant']['s:price']['@currency']
+                product_details = {'published': content['published'],
+                                   'grams': content['s:variant']['s:grams'],
+                                   'price': price,
+                                   'unit': unit
+                                   }
+            qs = BookmarkedProducts.objects.filter(user=self.request.user, title=content['title']).exists()
+            data = {
+                'img_src': src,
+                'product_link': content['link']['@href'],
+                'product_keyword': content['link']['@href'].split('/')[-1],
+                'details': para_tag,
+                'title': content['title'],
+                'vendor': content['s:vendor'],
+                'type': content['s:type'],
+                's_variants': product_details,
+                'mul_variants': variants,
+                'save_item': qs
+            }
+            result.append(data)
+
+        favorite = RssFeed.objects.filter(brand_name=page_res['response']['feed']['title'],
+                                          user=self.request.user).exists()
+        if not favorite:
+            RssFeed.objects.create(
+                brand_name=page_res['response']['feed']['title'],
+                brand_url=page_res['response']['feed']['id'].split("/collections")[0],
+                user=self.request.user
+            )
+        return Response(result, status=status.HTTP_200_OK)
 
     def get_page(self, link):
         payload = {}
@@ -157,6 +161,11 @@ class ListData(APIView):
         except requests.exceptions.RequestException as err:
             payload.update({'response': False})
             payload.update({'error': err})
+            payload.update({'status_code': status.HTTP_404_NOT_FOUND})
+            return payload
+        except Exception as e:
+            payload.update({'response': False})
+            payload.update({'error': e})
             payload.update({'status_code': status.HTTP_404_NOT_FOUND})
             return payload
 
