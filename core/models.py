@@ -271,6 +271,25 @@ class BookmarkedProducts(models.Model):
         verbose_name_plural = "Bookmarked Products"
 
 
+class SavedLookupProduct(models.Model):
+    """ Model to save user bookmarked/saved products for lookup (which caters for non-saved entries)
+        and show in its saved items
+    """
+    product_type = models.CharField(max_length=255, blank=False, null=False)
+    product_id = models.CharField(max_length=255, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bookmark_product = models.ForeignKey(BookmarkedProducts, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product_type + ' ' + self.product_id
+
+    class Meta:
+        verbose_name = "Saved Lookup Product"
+        verbose_name_plural = "Saved Lookup Products"
+
+
 class FeedStore(models.Model):
     """Store user shopify url
     to get store products details.

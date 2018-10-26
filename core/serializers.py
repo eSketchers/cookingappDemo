@@ -38,12 +38,14 @@ class CustomProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomProduct
-        fields = ('title','type','vendor','image','video','description',
+        fields = ('id', 'title','type','vendor','image','video','description',
                   'product_link','ali_express','actual_price',
                   'selling_price','profit', 'released_date', 'save_item',)
 
     def get_save_item(self, obj):
-        return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
+        # return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
+        return SavedLookupProduct.objects.filter(user=self.context['request'].user,
+                                          product_type='hot', product_id=obj.id).exists()
 
 class KeywordSerializer(serializers.ModelSerializer):
 
@@ -84,6 +86,14 @@ class BookmarkProductSerializer(serializers.ModelSerializer):
                   'description','created_at',)
 
 
+class SavedLookupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SavedLookupProduct
+        depth = 1
+        fields = '__all__'
+
+
 class FeedStoreSerializer(serializers.ModelSerializer):
     """Serializer to serialize and
        save store to get its products
@@ -102,9 +112,11 @@ class ProductFeedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FeedProducts
-        fields = ('title','type','vendor','img_link','description',
+        fields = ('id', 'title','type','vendor','img_link','description',
                   'product_link','published_at','price',
                   'unit','grams','created_at', 'save_item',)
 
     def get_save_item(self, obj):
-        return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
+        # return BookmarkedProducts.objects.filter(user=self.context['request'].user, title=obj.title).exists()
+        return SavedLookupProduct.objects.filter(user=self.context['request'].user,
+                                                 product_type='feed', product_id=obj.id).exists()

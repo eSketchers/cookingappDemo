@@ -1,3 +1,6 @@
+import uuid
+
+from django.db import transaction
 from django.db.models import F
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -80,6 +83,7 @@ class ListData(APIView):
 
                 product_details = {'published': content['published'],
                                    'grams': content['s:variant'][0]['s:grams'],
+                                   'sku': content['s:variant'][0]['s:sku'],
                                    'price': price,
                                    'unit': unit
                                    }
@@ -89,10 +93,16 @@ class ListData(APIView):
                 unit = content['s:variant']['s:price']['@currency']
                 product_details = {'published': content['published'],
                                    'grams': content['s:variant']['s:grams'],
+                                   'sku': content['s:variant']['s:sku'],
                                    'price': price,
                                    'unit': unit
                                    }
-            qs = BookmarkedProducts.objects.filter(user=self.request.user, title=content['title']).exists()
+            # qs = BookmarkedProducts.objects.filter(user=self.request.user, title=content['title']).exists()
+
+            qs = SavedLookupProduct.objects.filter(user=self.request.user,
+                                                   product_type='explore',
+                                                   product_id=product_details['sku']).exists()
+
             data = {
                 'img_src': src,
                 'product_link': content['link']['@href'],
@@ -442,6 +452,7 @@ class BookmarkProductsView(APIView):
         req_data = request.data
         data = req_data['product']
         type = req_data['type']
+        # prod_id = data['id']
 
         product = {
             'user': request.user,
@@ -457,24 +468,32 @@ class BookmarkProductsView(APIView):
             'unit': '',
         }
 
+        prod_id = None
+
         if type == 'explore':
             product = self.map_parsed_product(data, product)
+            prod_id = data['s_variants']['sku']
         elif type == 'hot':
             product = self.map_hot_product(data, product)
+            prod_id = data['id']
         elif type == 'feed':
             product = self.map_feed_product(data, product)
+            prod_id = data['id']
 
 
-
-
-        qs = BookmarkedProducts.objects.filter(user=request.user,
-                                               title = product['title']).exists()
-        if qs is False:
+        qs = SavedLookupProduct.objects.filter(user=request.user,
+                                               product_type=type, product_id=prod_id)
+        if not qs:
             try:
-                created_product = BookmarkedProducts(**product)
-                created_product.save()
-                response.update({'success':True})
-                status_code = status.HTTP_201_CREATED
+                with transaction.atomic():
+                    created_product = BookmarkedProducts(**product)
+                    created_product.save()
+
+                    lookup_product = SavedLookupProduct.objects.create(product_type=type, product_id=prod_id,
+                                                                       user=request.user,bookmark_product=created_product)
+                    lookup_product.save()
+                    response.update({'success':True})
+                    status_code = status.HTTP_201_CREATED
             except Exception as e:
                 response.update({'success': False})
                 status_code = status.HTTP_403_FORBIDDEN

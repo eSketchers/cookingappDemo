@@ -97,6 +97,8 @@ admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(TrendingProduct, TrendingProductAdmin)
 admin.site.register(VideoGroup, GroupAdmin)
 admin.site.register(TrainingVideo, TrainingVideoAdmin)
+admin.site.register(SavedLookupProduct)
+admin.site.register(BookmarkedProducts)
 
 # admin.site.unregister(CronStatus)
 # admin.site.unregister(FeedStore)
