@@ -10,6 +10,8 @@ import xmltodict
 from bs4 import BeautifulSoup
 from rest_framework import status
 from rest_framework.response import Response
+from urllib3.util import parse_url
+
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
@@ -44,20 +46,22 @@ class ListData(APIView):
         if page_res['response']:
             return self.get_product_feeds(page_res)
 
-        elif page_res['error']:
-            if page_res['status_code'] == 430:
-                return Response(page_res['error'], status=page_res['status_code'])
-            elif page_res['status_code'] == 404:
-                error = "Store url is invalid."
-                return Response(error, status=page_res['status_code'])
-            elif page_res['status_code'] == 503:
-                error = "Store is currently down or having some other issues. Try later"
-                return Response(error, status=page_res['status_code'])
-            else:
-                return Response(page_res['error'], status=page_res['status_code'])
-        else:
-            url_error = "Response of url is not available."
-            return Response(url_error, status=status.HTTP_404_NOT_FOUND)
+        return Response(page_res['error'], status=page_res['status'])
+
+        # elif page_res['error']:
+        #     # if page_res['status_code'] == 430:
+        #     #     return Response(page_res['error'], status=page_res['status_code'])
+        #     # elif page_res['status_code'] == 404:
+        #     #     error = "Store url is invalid."
+        #     #     return Response(error, status=page_res['status_code'])
+        #     # elif page_res['status_code'] == 503:
+        #     #     error = "Store is currently down or having some other issues. Try later"
+        #     #     return Response(error, status=page_res['status_code'])
+        #     else:
+        #         return Response(page_res['error'], status=page_res['status_code'])
+        # else:
+        #     url_error = "Response of url is not available."
+        #     return Response(url_error, status=status.HTTP_404_NOT_FOUND)
 
     def get_product_feeds(self, page_res):
         result = []
@@ -87,7 +91,6 @@ class ListData(APIView):
                                    'price': price,
                                    'unit': unit
                                    }
-
             else:
                 price = float(content['s:variant']['s:price']['#text'])
                 unit = content['s:variant']['s:price']['@currency']
@@ -97,12 +100,9 @@ class ListData(APIView):
                                    'price': price,
                                    'unit': unit
                                    }
-            # qs = BookmarkedProducts.objects.filter(user=self.request.user, title=content['title']).exists()
-
             qs = SavedLookupProduct.objects.filter(user=self.request.user,
                                                    product_type='explore',
                                                    product_id=product_details['sku']).exists()
-
             data = {
                 'img_src': src,
                 'product_link': content['link']['@href'],
@@ -128,56 +128,80 @@ class ListData(APIView):
         return Response(result, status=status.HTTP_200_OK)
 
     def get_page(self, link):
-        payload = {}
+        """
+        get the page from requested store link
+        :param link: store link
+        :return: onSucces: returns payload disctionary,
+        onError: returns payload with respective error messages
+        """
+
         try:
-            # req = urllib.request.Request(link)
-            # with urllib.request.urlopen(req) as response:
-            #     response = response.read()
+            link = self.get_full_link(link)
             response = requests.get(link)
-            if response.status_code == 200:
-                res_dict = xmltodict.parse(response.text)
-                payload.update({'response':res_dict})
-                payload.update({'error': False})
-                payload.update({'status_code': response.status_code})
-                return payload
-            elif response.status_code == 430:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                txt = soup.findAll('p')
-                payload.update({'response':False})
-                payload.update({'error': txt[0].text})
-                payload.update({'status_code': response.status_code})
-                return payload
-            else:
-                payload.update({'response': False})
-                payload.update({'error':response.text})
-                payload.update({'status_code': response.status_code})
-                return payload
-        except requests.exceptions.HTTPError as errh:
-            print("Http Error:", errh)
-            payload.update({'response': False})
-            payload.update({'error': errh})
-            payload.update({'status_code': response.status_code})
-            return payload
-        except requests.exceptions.ConnectionError as errc:
-            payload.update({'response': False})
-            payload.update({'error': errc})
-            payload.update({'status_code': status.HTTP_503_SERVICE_UNAVAILABLE})
-            return payload
-        except requests.exceptions.Timeout as errt:
-            payload.update({'response': False})
-            payload.update({'error': errt})
-            payload.update({'status_code': status.HTTP_408_REQUEST_TIMEOUT})
-            return payload
-        except requests.exceptions.RequestException as err:
-            payload.update({'response': False})
-            payload.update({'error': err})
-            payload.update({'status_code': status.HTTP_404_NOT_FOUND})
-            return payload
+            return self.get_the_store(response)
         except Exception as e:
+            return self.handle_exceptions(e)
+
+    def handle_exceptions(self, e):
+        """
+        handle exceptions for get_the_store
+        :param e: excepction object
+        :return: payload with success response or errors
+        """
+        payload = {}
+        if e == requests.exceptions.HTTPError:
+            payload.update({'error': "Unable to request store. Please try later."})
+            payload.update({'status': status.HTTP_404_NOT_FOUND})
+        elif e == requests.exceptions.ConnectionError:
+            payload.update({'error': "Store is currently down or having some other issues. Please try later."})
+            payload.update({'status': status.HTTP_503_SERVICE_UNAVAILABLE})
+        elif e == requests.exceptions.Timeout:
+            payload.update({'error': "Store is taking time to respond. Please try later."})
+            payload.update({'status': status.HTTP_408_REQUEST_TIMEOUT})
+        elif e == requests.exceptions.RequestException:
+            payload.update({'error': 'Could not get any results at this time, Please try later.'})
+            payload.update({'status': status.HTTP_404_NOT_FOUND})
+        elif e == requests.exceptions.InvalidURL:
+            payload.update({'error': 'Please try with a valid URL'})
+            payload.update({'status': status.HTTP_403_FORBIDDEN})
+        else:
+            payload.update({'error': "Please enter a Shopify store URL, if you believe this is a Shopify store URL and you're still seeing this error. "})
+            payload.update({'status': status.HTTP_404_NOT_FOUND})
+
+        payload.update({'response': False})
+        return payload
+
+    def get_the_store(self, response):
+        payload = {}
+        if response.status_code == 200:
+            res_dict = xmltodict.parse(response.text)
+            payload.update({'response': res_dict})
+            payload.update({'status': response.status_code})
+        elif response.status_code == 430:
             payload.update({'response': False})
-            payload.update({'error': e})
-            payload.update({'status_code': status.HTTP_404_NOT_FOUND})
-            return payload
+            payload.update({'error': 'Could not get any results at this time, Please try later.'})
+            payload.update({'status': response.status_code})
+        else:
+            payload.update({'response': False})
+            payload.update({'error': 'Something went wrong. Please try later'})
+            payload.update({'status': response.status_code})
+        return payload
+
+    def get_full_link(self, link):
+        scheme = None
+        host = None
+        try:
+            scheme, auth, host, port, path, query, fragment = parse_url(link)
+        except Exception as e:
+            pass
+
+        if host and not scheme or scheme != 'https':
+            link = 'https://' + host
+
+        if not link.endswith('/'):
+            link = link + '/'
+
+        return link + 'collections/all.atom'
 
 
 class ListRss(APIView):
