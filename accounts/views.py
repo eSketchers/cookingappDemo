@@ -1,12 +1,14 @@
 from rest_auth.registration.serializers import VerifyEmailSerializer
 from rest_auth.registration.views import APIView, ConfirmEmailView
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.shortcuts import render
+
+from accounts.serializers import CustomUserDetailsSerializer
 
 
 class CustomVerifyEmailView(APIView, ConfirmEmailView):
@@ -53,3 +55,19 @@ def reset_password_form(request, uidb64, token):
 
 def home(request):
     return render(request, 'home.html')
+
+
+class UpdateUserApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CustomUserDetailsSerializer
+    allowed_methods = ('POST', 'PUT')
+
+    def put(self, request, *args, **kwargs):
+        # authorization = UserSuitsPermissions().superuser(request.user)
+        user = self.request.user
+        serializer = CustomUserDetailsSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
