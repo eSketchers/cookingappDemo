@@ -2,6 +2,7 @@ from rest_framework_jwt.views import refresh_jwt_token
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
+from accounts.views import EditUserApiView
 from . import views
 
 from rest_auth.views import (
@@ -32,6 +33,7 @@ urlpatterns += [
     url(r'^login/facebook/$', views.FacebookLoginView.as_view(), name='fb_login'),
     url(r'^login/google/$', views.GoogleLoginView.as_view(), name='google_login'),
     url(r'^logout/$', LogoutView.as_view(), name='rest_logout'),
+    url(r'^edit/$', EditUserApiView.as_view(), name='user_edit'),
     url(r'^password/change/$', PasswordChangeView.as_view(),
         name='rest_password_change'),
     url(r'^$', UserDetailsView.as_view(), name='rest_user_details'),

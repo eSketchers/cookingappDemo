@@ -57,15 +57,17 @@ def home(request):
     return render(request, 'home.html')
 
 
-class UpdateUserApiView(APIView):
+class EditUserApiView(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CustomUserDetailsSerializer
+    # serializer_class = CustomUserDetailsSerializer
     allowed_methods = ('POST', 'PUT')
 
+    def get_object(self):
+        return self.request.user
+
     def put(self, request, *args, **kwargs):
-        # authorization = UserSuitsPermissions().superuser(request.user)
-        user = self.request.user
-        serializer = CustomUserDetailsSerializer(user, data=request.data, partial=True)
+        user_instance = self.get_object()
+        serializer = CustomUserDetailsSerializer(user_instance, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
