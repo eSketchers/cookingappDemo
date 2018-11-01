@@ -40,6 +40,7 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'date_of_birth',
                   'address_1', 'address_2', 'picture', 'telephone', 'post_code')
         read_only_fields = ('email',)
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class CustomRegisterSerializer(serializers.Serializer):
