@@ -16,7 +16,7 @@ class Command(BaseCommand):
         # users = EmailAddress.objects.all(user__is_admin=False, user__is_active=True, verified=True)
         users = User.objects.filter(is_admin=False)
         try:
-            plan = SubscriptionPlan.objects.get(type=SubscriptionPlan.ANNUAL)
+            plan = SubscriptionPlan.objects.get(type=SubscriptionPlan.FREE)
             for user in users:
                 if not Subscription.objects.filter(user=user).exists():
                     Subscription.objects.create(user=user, plan=plan, is_active=True)
