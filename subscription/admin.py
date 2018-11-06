@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from subscription.models import SubscriptionPlan, Subscription
+from subscription.models import SubscriptionPlan, Subscription, StripeUser
 
 
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -31,3 +31,4 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 admin.site.register(SubscriptionPlan, SubscriptionPlanAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
+admin.site.register(StripeUser)

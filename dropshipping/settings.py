@@ -63,6 +63,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': '/home/ubuntu/webapps/logs/dsd_logs/debug.log',
         },
+        'error_logfile': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/home/ubuntu/webapps/logs/dsd_logs/error.log',
+        },
     },
     'loggers': {
         'django': {
@@ -270,6 +275,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 APPEND_SLASH = True
 
 TRIAL_DAYS = 7
+
+STRIPE_PUBLIC_API_KEY = 'pk_test_TCUkbjXXebMYJ3CnlMYztrjS'
+STRIPE_SECRET_API_KEY = 'sk_test_RCDVDglESQTT6rF8fiOmjBE6'
 
 
 try:

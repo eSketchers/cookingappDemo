@@ -7,6 +7,20 @@ from django.conf import settings
 
 User = settings.AUTH_USER_MODEL
 
+
+class StripeUser(models.Model):
+    user = models.ForeignKey(User,
+                             related_name='stripe_user',
+                             verbose_name='User',
+                             on_delete=models.SET_NULL,
+                             null=True
+                             )
+    customer = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user.email
+
+
 class SubscriptionPlan(models.Model):
     MONTHLY = 'MON'
     ANNUAL = 'AN'
@@ -19,6 +33,7 @@ class SubscriptionPlan(models.Model):
 
     name = models.CharField(default='', max_length=255, blank=False, null=False)
     description = models.CharField(default='', max_length=255, blank=False, null=False)
+    # prod_id = models.CharField(default='', max_length=255, blank=False, null=False, help_text="stripe product id which holds different plans")
     plan_id = models.CharField(default='', max_length=255, blank=False, null=False, help_text="stripe plan id")
     price = models.FloatField(default=0, null=False, blank=False)
     type = models.CharField(
@@ -54,13 +69,13 @@ class Subscription(models.Model):
                              related_name='subscription',
                              verbose_name='User',
                              on_delete=models.CASCADE,
-                             unique=True
                              )
     plan = models.ForeignKey('SubscriptionPlan',
                              related_name='subscription',
                              on_delete=models.PROTECT
                              )
 
+    subscription = models.CharField(max_length=255, verbose_name='stripe_subscription_id', null=True, blank=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
