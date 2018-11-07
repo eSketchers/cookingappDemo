@@ -14,4 +14,6 @@ def create_user_profile(sender, instance, created, **kwargs):
             plan = SubscriptionPlan.objects.get(type=SubscriptionPlan.FREE)
             Subscription.objects.create(user=instance, plan=plan, is_active=True)
         except SubscriptionPlan.DoesNotExist as e:
-            print('code broke')
+            print('plan does not exist')
+        except Exception as e:
+            print(e)
