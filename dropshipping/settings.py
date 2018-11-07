@@ -217,7 +217,7 @@ ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'tally3300@gmail.com'
+EMAIL_HOST_USER = 'henrywilliam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Marketing1122'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -274,10 +274,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 APPEND_SLASH = True
 
-TRIAL_DAYS = 365
+TRIAL_DAYS = 7
 
 STRIPE_PUBLIC_API_KEY = 'pk_test_TCUkbjXXebMYJ3CnlMYztrjS'
 STRIPE_SECRET_API_KEY = 'sk_test_RCDVDglESQTT6rF8fiOmjBE6'
+
+SHOPIFY_API_KEY = "0e9f4f4a3f4e0852ded420023d568851"
+SHOPIFY_API_SECRET = "6d7fab435136792b8bad5acdc8750a05"
 
 
 try:

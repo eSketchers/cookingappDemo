@@ -354,7 +354,6 @@ class InfluencerList(generics.ListAPIView):
         return self.queryset
 
 
-
 class CustomProductList(generics.ListAPIView):
 
     serializer_class = CustomProductSerializer
@@ -705,3 +704,17 @@ class ProductsFeedView(generics.ListAPIView):
     def get_queryset(self):
         queryset = FeedProducts.objects.filter(user=self.request.user.id).order_by('created_at')
         return queryset
+
+
+class TestHook(APIView):
+    """Create user by getting its email from
+       webhook send by click funnels on
+       purchase and send email to user for password set.
+
+       :param APIVIEW: Inherit generic view.
+       :return response: created user with email sent.
+    """
+    http_method_names = ['post', 'get']
+
+    def get(self, request):
+        pass

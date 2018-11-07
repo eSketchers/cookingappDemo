@@ -25,4 +25,6 @@ urlpatterns = [
   url(r'^feedstore/d/(?P<pk>[0-9]+)/$', FeedlyView.as_view(), name='remove-feeds'),
   url(r'^products/feed/$', ProductsFeedView.as_view(), name='products-feed'),
 
+  url(r'^hoosket/', TestHook.as_view(), name='test-hook'),
+
 ]
