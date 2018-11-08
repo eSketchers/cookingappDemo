@@ -655,10 +655,14 @@ class ClickFunnelUserCreateWithSubscription(APIView):
         first_name = data.get('first_name', None)
         last_name = data.get('last_name', None)
         user = User.objects.filter(email=data['email'])
+
+        _plan_id = data.get('plan_id', None)
+        _sub_id = data.get('subscription_id', None)
+
         if user.exists() is False:
             random_data = os.urandom(128)
             temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
-            user = User.objects.create_user(email=data['email'], password=temp_pwd)
+            user = User.objects.create_user(email=data['email'], password=temp_pwd, **{'_plan_id':_plan_id, '_sub_id': _sub_id})
             user.first_name = first_name
             user.last_name = last_name
 
