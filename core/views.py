@@ -629,6 +629,53 @@ class ClickFunnelUserCreate(APIView):
         return None
 
 
+class ClickFunnelUserCreateWithSubscription(APIView):
+    """Create user by getting its email & subscription & plan id from
+       webhook send by click funnels on
+       purchase and send email to user for password set.
+
+       :param APIVIEW: Inherit generic view.
+       :return response: created user with email sent.
+    """
+    http_method_names = ['post']
+
+    def post(self, request):
+        data = request.data # get data object from request.
+        user = self.create_temp_user(data)
+        data = dict(email=data['email'])
+        if user is not None:
+            serializer = CustomUserCreateSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response("User created successfully.", status=status.HTTP_201_CREATED)
+        else:
+            return Response("User already Exist.", status=status.HTTP_202_ACCEPTED)
+
+    def create_temp_user(self, data):
+        first_name = data.get('first_name', None)
+        last_name = data.get('last_name', None)
+        user = User.objects.filter(email=data['email'])
+        if user.exists() is False:
+            random_data = os.urandom(128)
+            temp_pwd = hashlib.md5(random_data).hexdigest()[:8]
+            user = User.objects.create_user(email=data['email'], password=temp_pwd)
+            user.first_name = first_name
+            user.last_name = last_name
+
+
+
+            user.save()
+
+            email_address = EmailAddress()
+            email_address.user = user
+            email_address.verified = True
+            email_address.primary = True
+            email_address.email = data['email']
+            email_address.save()
+            return user
+        return None
+
+
 class FeedlyView(APIView):
     """User list, save and delete their searched store
        from feedStore model.

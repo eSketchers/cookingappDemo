@@ -22,6 +22,19 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError('Users must have an email address')
+
+        # for scripts to add user and their subscriptions
+        # from a csv file obtained from zapier & clickfunnel
+        _sub_id = None
+        _plan_id = None
+        try:
+            _sub_id = extra_fields['_sub_id']
+            _plan_id = extra_fields['_plan_id']
+            del extra_fields['_sub_id']
+            del extra_fields['_plan_id']
+        except Exception as e:
+            pass
+
         try:
             user = User.objects.get(email=email)
         except Exception as ex:
@@ -32,6 +45,11 @@ class UserManager(BaseUserManager):
             )
 
         user.set_password(password)
+
+        if _sub_id and _plan_id:
+            user._sub_id = _sub_id
+            user._plan_id = _plan_id
+
         user.save(using=self._db)
         return user
 

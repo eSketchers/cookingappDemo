@@ -26,5 +26,6 @@ urlpatterns = [
   url(r'^products/feed/$', ProductsFeedView.as_view(), name='products-feed'),
 
   url(r'^hoosket/', TestHook.as_view(), name='test-hook'),
+  url(r'^zap_create_user_sub/', ClickFunnelUserCreateWithSubscription.as_view(), name='zap-create-user-sub'),
 
 ]
