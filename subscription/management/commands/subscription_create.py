@@ -109,7 +109,7 @@ class Command(BaseCommand):
                     if user_sub:
                         # if user_sub.subscription != _sub_id:
                         user_sub.subscription = _sub_id
-                        user.plan = plan
+                        user_sub.plan = plan
                         user_sub.save()
                     else:
                         logger.error("no active subscription found for -{0}".format(user.email))
