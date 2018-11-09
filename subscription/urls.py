@@ -12,5 +12,6 @@ urlpatterns = router.urls
 urlpatterns += [
 
   url(r'^checkout/$', SubscribeApiView.as_view(), name='checkout'),
+  url(r'^cancel-subscription/$', CancelSubscriptionApiView.as_view(), name='checkout'),
   # url(r'^delete-feed/(?P<pk>[0-9]+)/$', FavoriteFeeds.as_view(), name='delete-feed'),
 ]

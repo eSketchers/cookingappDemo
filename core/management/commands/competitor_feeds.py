@@ -22,6 +22,8 @@ class Command(BaseCommand):
         if created:
             users = EmailAddress.objects.filter(verified = True, user__is_admin = False)
             for user in users:
+                print('----------------------------')
+                print('Executing for user {0}'.format(user.email))
                 _store_urls = FeedStore.objects.filter(user_id=user.user_id)
                 _urls_count = _store_urls.count()
                 for url_obj in _store_urls:
@@ -35,7 +37,6 @@ class Command(BaseCommand):
                             print('Exception ERROR of: {0} for the reason: {1}'.format(url_obj.brand_url, e))
                             continue
                         self.parse_product(pars_response, user, url_obj)
-                print("Inserted {0} products details Successfully.".format(str(_urls_count)))
             cron.delete()
             end_time = datetime.datetime.now().time().strftime('%H:%M:%S')
             total_time = (datetime.datetime.strptime(end_time, '%H:%M:%S') - datetime.datetime.strptime(start_time, '%H:%M:%S'))
@@ -63,6 +64,7 @@ class Command(BaseCommand):
     def parse_product(self, feeds, user, url_obj):
         if 'entry' in feeds['feed']:
             try:
+                count = 0
                 for content in feeds['feed']['entry']:
                     soup = BeautifulSoup(content['summary']['#text'], 'html.parser')
                     src = soup.find_all("img")[0].attrs['src']
@@ -97,9 +99,10 @@ class Command(BaseCommand):
                                                     unit=unit,
                                                     published_at=published
                                                     )
-                print("Successfully inserted {0} products.".format(url_obj))
+                        count += 1
+                print("Successfully inserted {0} products from store.".format(count))
             except Exception as e:
-                print("Error on inserting product detail.")
+                print("Error on inserting product detail for store {0}.".format(url_obj.brand_url))
                 print('Reason', e)
         else:
             print("Feeds has no entries.")

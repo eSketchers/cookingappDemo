@@ -87,6 +87,7 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'User Subscription'
         verbose_name_plural = 'User Subscriptions'
+        ordering = ['-id']
 
     def save(self, *args, **kwargs):
         if not self.pk:

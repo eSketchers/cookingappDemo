@@ -62,6 +62,7 @@ class TokenSerializer(serializers.Serializer):
 
                 stripe_subscription = stripe.Subscription.create(
                     customer=customer_id,
+                    cancel_at_period_end= True,
                     items=[
                         {
                             "plan": plan.plan_id,
