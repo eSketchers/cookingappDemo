@@ -107,7 +107,6 @@ class Command(BaseCommand):
                     plan = SubscriptionPlan.objects.filter(plan_id=_plan_id).first()
                     user_sub = user.first().subscription.get(is_active=True)
                     if user_sub:
-                        # if user_sub.subscription != _sub_id:
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.save()

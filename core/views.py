@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from urllib3.util import parse_url
 
+from subscription.models import SubscriptionPlan
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
@@ -649,7 +650,7 @@ class ClickFunnelUserCreateWithSubscription(APIView):
             serializer.save()
             return Response("User created successfully.", status=status.HTTP_201_CREATED)
         else:
-            return Response("User already Exist.", status=status.HTTP_202_ACCEPTED)
+            return Response("User already Exist. Subscription updated", status=status.HTTP_202_ACCEPTED)
 
     def create_temp_user(self, data):
         first_name = data.get('first_name', None)
@@ -665,9 +666,6 @@ class ClickFunnelUserCreateWithSubscription(APIView):
             user = User.objects.create_user(email=data['email'], password=temp_pwd, **{'_plan_id':_plan_id, '_sub_id': _sub_id})
             user.first_name = first_name
             user.last_name = last_name
-
-
-
             user.save()
 
             email_address = EmailAddress()
@@ -677,6 +675,23 @@ class ClickFunnelUserCreateWithSubscription(APIView):
             email_address.email = data['email']
             email_address.save()
             return user
+        else:
+            if _sub_id:
+                try:
+                    plan = SubscriptionPlan.objects.filter(plan_id=_plan_id).first()
+                    user_sub = user.first().subscription.get(is_active=True)
+                    if user_sub:
+                        # if user_sub.subscription != _sub_id:
+                        user_sub.subscription = _sub_id
+                        user_sub.plan = plan
+                        user_sub.save()
+                    else:
+                        logger.error("no active subscription found for -{0}".format(user.email))
+                except Exception as e:
+                    logger.error("something bad happened -{0} -- {1}".format(user.email, e.args))
+
+            else:
+                logger.error("no sub_id found to update info for -{0}".format(user.email))
         return None
 
 
