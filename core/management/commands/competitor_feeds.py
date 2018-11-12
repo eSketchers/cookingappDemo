@@ -11,7 +11,7 @@ headers = {'User-Agent': user_agent, }
 
 
 class Command(BaseCommand):
-    help = 'Scrape product from user feeds store and save in table.'
+    help = 'Scrape product from user feeds store and save in Feed products model.'
 
     def handle(self, *args, **options):
         print("Executing....")
@@ -34,7 +34,7 @@ class Command(BaseCommand):
                         try:
                             pars_response = xmltodict.parse(response)
                         except Exception as e:
-                            print('Exception ERROR of: {0} for the reason: {1}'.format(url_obj.brand_url, e))
+                            print('XML PARSE ERROR of: {0} for the reason: {1}'.format(url_obj.brand_url, e))
                             continue
                         self.parse_product(pars_response, user, url_obj)
             cron.delete()
@@ -53,10 +53,10 @@ class Command(BaseCommand):
                 return response.read()
         except urllib.request.HTTPError as e:
             if hasattr(e, 'reason'):
-                print('HTTP ERROR from: {0} for the reason: {1}'.format(url, e.reason))
+                print('HTTP ERROR from: {0} for the reason: {1}'.format(url, e.args))
         except urllib.request.URLError as e:
             if hasattr(e, 'reason'):
-                print('Response ERROR from: {0} for the reason: {1}'.format(url, e.reason))
+                print('Response ERROR from: {0} for the reason: {1}'.format(url, e.args))
         except Exception as e:
             print('Exception ERROR of: {0} for the reason: {1}'.format(url, e))
         return response
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                                                     published_at=published
                                                     )
                         count += 1
-                print("Successfully inserted {0} products from store.".format(count))
+                print("Successfully inserted {0} products from store {1}".format(count, url_obj.brand_name))
             except Exception as e:
                 print("Error on inserting product detail for store {0}.".format(url_obj.brand_url))
                 print('Reason', e)

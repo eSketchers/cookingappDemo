@@ -6,6 +6,10 @@ from django.utils.timezone import now
 
 
 class RssFeed(models.Model):
+    """
+    Save store which user search to get its product feed.
+
+    """
     user = models.ForeignKey(User,
                              related_name='user_rss',
                              on_delete=models.CASCADE
@@ -28,6 +32,9 @@ class RssFeed(models.Model):
 
 
 class FavoriteSite(models.Model):
+    """
+     Model is not in use.
+    """
     user = models.ForeignKey(User,
                              verbose_name='User',
                              on_delete=models.CASCADE
@@ -67,6 +74,9 @@ class StoreUrl(models.Model):
 
 
 class ProductDetail(models.Model):
+    """
+    Saved products details
+    """
 
     title = models.CharField(max_length=255, blank=False, null=False)
     type = models.CharField(max_length=255, blank=True, null=True)
@@ -88,7 +98,9 @@ class ProductDetail(models.Model):
 
 
 class TrendingProduct(models.Model):
-
+    """
+    Saved those products as a json which have same title.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     data = JSONField()
 
@@ -104,7 +116,9 @@ class TrendingProduct(models.Model):
 
 
 class CronStatus(models.Model):
-
+    """
+    Mointer manage commands status during execution.
+    """
     job_name = models.CharField(max_length=255, blank=True, null=True)
     status = models.BooleanField(default=False)
 
@@ -120,7 +134,9 @@ class CronStatus(models.Model):
 
 
 class Influencer(models.Model):
-
+    """
+    Model for save details of instagarm users.
+    """
     name        = models.CharField(blank=True, null=True, max_length=255)
     username    = models.CharField(blank=True, null=True, max_length=255)
     url         = models.CharField(blank=True, null=True, max_length=255)
@@ -146,6 +162,9 @@ class Influencer(models.Model):
 
 
 class CustomProduct(models.Model):
+    """Model keep details of products added by admin panel
+       as a hot products.
+    """
 
     title = models.CharField(max_length=255, blank=False, null=False)
     type = models.CharField(max_length=255, blank=True, null=True)
@@ -173,7 +192,9 @@ class CustomProduct(models.Model):
 
 
 class FeedBack(models.Model):
-
+    """Save feedback related to services
+     given by dsd.
+    """
     email = models.CharField(max_length=255 )
     feedback = models.TextField(max_length=1000)
 
@@ -189,7 +210,9 @@ class FeedBack(models.Model):
 
 
 class Keyword(models.Model):
-
+    """ Model to store keyword data.
+        It is not in use yet.
+    """
     key = models.CharField(max_length=255, blank=False, null=False)
     cpc = models.FloatField(max_length=65)
     volume = models.FloatField(max_length=65)
@@ -245,7 +268,7 @@ class TrainingVideo(models.Model):
 
 
 class BookmarkedProducts(models.Model):
-    """ Model to save user bookmarked products
+    """ Model to save user products which they make favorite
         and show in its saved items
     """
     title = models.CharField(max_length=255, blank=False, null=False)
@@ -272,7 +295,8 @@ class BookmarkedProducts(models.Model):
 
 
 class SavedLookupProduct(models.Model):
-    """ Model to save user bookmarked/saved products for lookup (which caters for non-saved entries)
+    """ Model to save user bookmarked/saved products for lookup
+        (which caters for non-saved entries)
         and show in its saved items
     """
     product_type = models.CharField(max_length=255, blank=False, null=False)
@@ -291,8 +315,9 @@ class SavedLookupProduct(models.Model):
 
 
 class FeedStore(models.Model):
-    """Store user shopify url
-    to get store products details.
+    """ Model to keep user shopify url
+        to get store products details using python
+        manage.py script.
     """
     brand_name = models.CharField(max_length=255, null=False, blank=False)
     brand_url = models.CharField(max_length=255, null=False, blank=False)
@@ -317,7 +342,7 @@ class FeedStore(models.Model):
 
 
 class FeedProducts(models.Model):
-    """ Model to save user FeedStore model products
+    """ Model to save user products details
         and show products as a feeds.
     """
     title = models.CharField(db_index=True, max_length=500, blank=False, null=False)
