@@ -340,6 +340,6 @@ class FeedProducts(models.Model):
         return self.vendor
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
         verbose_name = "Feedly Product"
         verbose_name_plural = "Feedly Products"

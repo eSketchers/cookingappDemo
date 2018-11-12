@@ -211,7 +211,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 4
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Ecom Engine'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Dropship CEO'
 ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -276,8 +276,9 @@ APPEND_SLASH = True
 
 TRIAL_DAYS = 7
 
-STRIPE_PUBLIC_API_KEY = 'pk_test_TCUkbjXXebMYJ3CnlMYztrjS'
-STRIPE_SECRET_API_KEY = 'sk_test_RCDVDglESQTT6rF8fiOmjBE6'
+# live keys. Should be replaced with test keys for testing purposes
+STRIPE_PUBLIC_API_KEY = 'pk_live_sQP56HM0LUEb2SbI56gbEPm4'
+STRIPE_SECRET_API_KEY = 'sk_live_Fwl5dRrfmTgMSBfyrdGiZYRC'
 
 SHOPIFY_API_KEY = "0e9f4f4a3f4e0852ded420023d568851"
 SHOPIFY_API_SECRET = "6d7fab435136792b8bad5acdc8750a05"
