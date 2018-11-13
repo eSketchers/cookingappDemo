@@ -12,6 +12,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from urllib3.util import parse_url
 
+from core.permissions import HasActiveSubscription
 from subscription.models import SubscriptionPlan
 from .models import *
 from .serializers import *
@@ -358,7 +359,7 @@ class InfluencerList(generics.ListAPIView):
 class CustomProductList(generics.ListAPIView):
 
     serializer_class = CustomProductSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
     pagination_class = LargeResultsSetPagination
     queryset = CustomProduct.objects.filter(is_active=True).order_by('-created_at')
 
@@ -370,21 +371,19 @@ class CustomProductList(generics.ListAPIView):
         max_range = self.request.query_params.get('max_range', None)
         order = self.request.query_params.get('order_by', None)
 
-
-
-        if (min_range and max_range):
+        if min_range and max_range:
             self.queryset = self.queryset.filter(selling_price__range=(min_range, max_range))
         elif (min_range and not max_range):
             self.queryset = self.queryset.filter(selling_price__gte=min_range)
 
-        if (order):
+        if order:
             # lp = lowest price
             # hp = highest price
             # da = date added price
 
-            if(order == 'lp'):
+            if order == 'lp':
                 self.queryset = self.queryset.order_by('selling_price')
-            elif (order == 'hp'):
+            elif order == 'hp':
                 self.queryset = self.queryset.order_by('-selling_price')
                 # elif (order == 'da'):
                 #     self.queryset = self.queryset.order_by('-created_at')
