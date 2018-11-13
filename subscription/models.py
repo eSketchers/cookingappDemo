@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
@@ -18,7 +19,9 @@ class StripeUser(models.Model):
     customer = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.user.email
+        if self.user:
+            return self.user.email
+        return self.customer
 
 
 class SubscriptionPlan(models.Model):
@@ -94,3 +97,46 @@ class Subscription(models.Model):
             self.expiry_date = timezone.now() + datetime.timedelta(days=self.plan.duration)
         super(Subscription, self).save(*args, **kwargs)
 
+
+class SubscriptionLogs(models.Model):
+    """
+    maintain subscription logs against stripe webhooks
+    """
+    user = models.ForeignKey(User,
+                             related_name='subscription_log_user',
+                             verbose_name='User',
+                             on_delete=models.SET_NULL,
+                             null=True
+                             )
+    plan = models.CharField(default='', max_length=255, blank=False, null=True)
+    subscription = models.CharField(default='', max_length=255, blank=False, null=True)
+
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self. subscription + ' ' + self.plan
+
+    class Meta:
+        verbose_name = 'Subscription Log'
+        verbose_name_plural = 'Subscriptions Logs'
+        ordering = ['-created_at']
+
+
+class EventLogs(models.Model):
+    """
+    maintain events(stripe webhoolk) logs
+    """
+    name = models.CharField(default='', max_length=255, blank=False, null=True)
+    payload = JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self. name
+
+    class Meta:
+        verbose_name = 'Event Log'
+        verbose_name_plural = 'Events Logs'
+        ordering = ['-created_at']

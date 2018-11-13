@@ -99,6 +99,6 @@ class TokenSerializer(serializers.Serializer):
             payload.update({'error': e.message})
             payload.update({'success': False})
 
-        logger.error('subscription create error', )
+        logger.error('subscription create error')
         return {'data': {'success': payload['success'], 'errors': payload['error']}, 'status': status.HTTP_400_BAD_REQUEST}
         # return Response({'success': payload['success'], 'errors': payload['error']}, status=status.HTTP_400_BAD_REQUEST)

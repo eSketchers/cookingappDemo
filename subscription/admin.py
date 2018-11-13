@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 
-from subscription.models import SubscriptionPlan, Subscription, StripeUser
+from subscription.models import SubscriptionPlan, Subscription, StripeUser, SubscriptionLogs, EventLogs
 
 
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -27,8 +27,21 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ['user', 'plan', 'expiry_date', 'is_active']
     exclude = ()
-    # search_fields = ('title',)
+    search_fields = ('user__email', 'plan__name')
+
+
+class SubscriptionLogsAdmin(admin.ModelAdmin):
+    list_display = ['user', 'plan', 'subscription', 'status', 'created_at']
+    search_fields = ('subscription',)
+
+
+class EventLogsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'created_at', 'updated_at']
+    search_fields = ('name',)
+
 
 admin.site.register(SubscriptionPlan, SubscriptionPlanAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(StripeUser)
+admin.site.register(SubscriptionLogs, SubscriptionLogsAdmin)
+admin.site.register(EventLogs, EventLogsAdmin)

@@ -171,8 +171,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
+
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'PAGE_SIZE': 100
 }
 
@@ -276,12 +280,22 @@ APPEND_SLASH = True
 
 TRIAL_DAYS = 7
 
-# live keys. Should be replaced with test keys for testing purposes
+# live keys. Should be replaced with test keys when in need for testing
 STRIPE_PUBLIC_API_KEY = 'pk_live_sQP56HM0LUEb2SbI56gbEPm4'
 STRIPE_SECRET_API_KEY = 'sk_live_Fwl5dRrfmTgMSBfyrdGiZYRC'
 
+# stripe webhook secrets
+endpoint_secret = {
+    'payment_failed': '',
+    'payment_succeeded': '',
+    'invoice_created': '',
+    'subscription_deleted': 'whsec_qU1H4YYRba1ilvmzmZuoteu7gHscCZ8f',
+    'subscription_updated': ''
+}
+
 SHOPIFY_API_KEY = "0e9f4f4a3f4e0852ded420023d568851"
 SHOPIFY_API_SECRET = "6d7fab435136792b8bad5acdc8750a05"
+
 
 
 try:
