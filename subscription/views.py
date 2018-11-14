@@ -64,8 +64,8 @@ class CancelSubscriptionApiView(APIView):
                     stripe_sub_id = user_sub.subscription
                     stripe_sub = stripe.Subscription.retrieve(stripe_sub_id)
                     stripe_sub.delete()
-                    user_sub.is_active = False
-                    user_sub.save()
+                    # user_sub.is_active = False
+                    # user_sub.save()
                     return Response({'success': True, 'message': 'Subscription has been canceled'},
                                     status=status.HTTP_200_OK)
                 except stripe.error.InvalidRequestError as e:
@@ -86,8 +86,8 @@ class CancelSubscriptionApiView(APIView):
 
                 return Response({'success': False, 'message': message}, status=status.HTTP_400_BAD_REQUEST)
 
-            user_sub.is_active = False
-            user_sub.save()
+            # user_sub.is_active = False
+            # user_sub.save()
             return Response({'success': True, 'message': 'Subscription has been canceled'}, status=status.HTTP_200_OK)
 
         return Response({'success': True, 'message': 'No active subscription found'}, status=status.HTTP_200_OK)
