@@ -189,6 +189,7 @@ class CustomProduct(models.Model):
     class Meta:
         verbose_name = "Custom Product"
         verbose_name_plural = "Custom Products"
+        ordering = ['-created_at', ]
 
 
 class FeedBack(models.Model):

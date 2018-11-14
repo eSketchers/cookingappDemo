@@ -50,6 +50,7 @@ class SubscriptionPlan(models.Model):
             MinValueValidator(0)
         ])
 
+    status = models.BooleanField(default=True, help_text='check this to show the plan to user')
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)

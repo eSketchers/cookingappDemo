@@ -218,12 +218,21 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Dropship CEO'
 ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'henrywilliam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Marketing1122'
 EMAIL_PORT = 587
+
+# EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+# EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+# EMAIL_HOST_USER = 'AKIAJHHB7X2UXZC2BGMA'
+# EMAIL_HOST_PASSWORD = 'AtnjYEtIKwKvCiH1oDt1p1Db/kf/fgwim3laZsfHowVC'
+
+# smtplib.SMTP use port 25，smtplib.SMTP_SSL use 465
+# EMAIL_PORT = 465
+
 EMAIL_USE_TLS = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
@@ -295,7 +304,6 @@ endpoint_secret = {
 
 SHOPIFY_API_KEY = "0e9f4f4a3f4e0852ded420023d568851"
 SHOPIFY_API_SECRET = "6d7fab435136792b8bad5acdc8750a05"
-
 
 
 try:

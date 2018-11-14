@@ -31,7 +31,9 @@ class SubscriptionPlanViewSet(viewsets.ModelViewSet):
     # queryset = SubscriptionPlan.objects.all()
 
     def get_queryset(self):
-        return SubscriptionPlan.objects.filter(is_active=True).exclude(type=SubscriptionPlan.FREE)
+        return SubscriptionPlan.objects.filter(is_active=True) \
+            .exclude(type=SubscriptionPlan.FREE) \
+            .exclude(status=False)
 
 
 class SubscribeApiView(APIView):

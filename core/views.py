@@ -40,7 +40,7 @@ class ListData(APIView):
     """Get Xml of input store and
        list its products feeds into feeds component.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def post(self, request):
         url = request.data['link']
@@ -210,7 +210,7 @@ class ListRss(APIView):
     """ Show all searched urls of specific user,
         in his Stores component.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def get(self, request, format=None):
         feeds = RssFeed.objects.filter(user=request.user)
@@ -323,7 +323,7 @@ class SimilarKeyword(APIView):
 
 
 class InfluencerList(generics.ListAPIView):
-
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
     serializer_class = InfluencerSerializer
     pagination_class = LargeResultsSetPagination
     filter_backends = (SearchFilter,)
@@ -463,7 +463,7 @@ class BookmarkProductsView(APIView):
     """
        Save/Delete and List bookmarked products.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, HasActiveSubscription    )
 
     def get(self, request, format=None):
         qs = BookmarkedProducts.objects.filter(user=request.user)
@@ -764,7 +764,7 @@ class ProductsFeedView(generics.ListAPIView):
 
     serializer_class = ProductFeedSerializer
     pagination_class = LargeResultsSetPagination
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def get_queryset(self):
         queryset = FeedProducts.objects.filter(user=self.request.user.id)
