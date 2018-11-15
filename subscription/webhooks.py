@@ -49,6 +49,7 @@ class WebHooksView(APIView):
             if event_type == stripe_events.get('subscription_deleted'):
                 status_code = self.subscription_deleted(data)
         except Exception as e:
+            status_code = 400
             logger.error('webhook event log error')
         # if event_type:
         # if data['type'] == stripe_events.get('payment_failed'):
@@ -72,38 +73,42 @@ class WebHooksView(APIView):
         :return: status (eg. 200, 400) to be returned to stripe
         """
 
-        type = stripe_events.get('subscription_deleted')
-        verify_status = self.verify_signature(self.request, 'subscription_deleted')
-        try:
-            return verify_status
-        finally:
-            if verify_status == 200:
+        # verify_status = self.verify_signature(self.request, 'subscription_deleted')
+        # try:
+        #     return verify_status
+        # finally:
+        #     if verify_status == 200:
                 # get customer id from stripe webhook call
-                customer = data['data']['object']['customer']
+        try:
+            type = stripe_events.get('subscription_deleted')
+            customer = data['data']['object']['customer']
 
-                # check if user exists against customer
-                customer_info = subscription_app.StripeUser.objects.filter(customer=customer).first()
-                user = None
+            # check if user exists against customer
+            customer_info = subscription_app.StripeUser.objects.filter(customer=customer).first()
+            user = None
 
-                if not customer_info:
-                    try:
-                        stripe_customer = stripe.Customer.retrieve(customer)
-                        email = stripe_customer.email
-                        user = User.objects.filter(email=email).first()
+            if not customer_info:
+                try:
+                    stripe_customer = stripe.Customer.retrieve(customer)
+                    email = stripe_customer.email
+                    user = User.objects.filter(email=email).first()
 
-                        # save customer id for logs
-                        subscription_app.StripeUser.objects.create(user=user, customer=customer)
-                    except Exception as e:
-                        logger.error('customer retrieve error')
-                else:
-                    user = customer_info.user
+                    # save customer id for logs
+                    subscription_app.StripeUser.objects.create(user=user, customer=customer)
+                except Exception as e:
+                    logger.error('customer retrieve error')
+            else:
+                user = customer_info.user
 
-                # check if user exists agains this customer id.
-                # user could not be in our db due to duplicated entries being rejected by our system during zaps receive
-                if user:
-                    # cancel user subscription
-                    # save logs
-                    self.cancel_sub_and_log(user,)
+            # check if user exists agains this customer id.
+            # user could not be in our db due to duplicated entries being rejected by our system during zaps receive
+            if user:
+                # cancel user subscription
+                # save logs
+                self.cancel_sub_and_log(user,)
+            return 200
+        except Exception as e:
+            return 400
 
     def cancel_sub_and_log(self, user):
         subscription = user.subscription.filter(is_active=True).first()
