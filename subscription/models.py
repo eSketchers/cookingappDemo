@@ -51,6 +51,7 @@ class SubscriptionPlan(models.Model):
         ])
 
     status = models.BooleanField(default=True, help_text='check this to show the plan to user')
+    cancelable = models.BooleanField(default=True, help_text='if plan can be canceled or not')
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)

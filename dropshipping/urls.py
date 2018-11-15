@@ -27,8 +27,7 @@ urlpatterns = [
     url(r'^', include('shopification.urls')),
     url(r'^api/v1/', include('shopification.urls')),
 
-    url(r'^accounts/', include('allauth.urls')),
-    url(r'^api/v1/user/', include('accounts.urls')),
+    url(r'^api/v1/user/', include('accounts.urls'), name='my-accounts'),
     url(r'^', include('django.contrib.auth.urls')),
     url(r'^api/v1/core/', include('core.urls')),
     url(r'^api/v1/', include('subscription.urls')),
