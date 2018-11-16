@@ -145,39 +145,3 @@ class UserActionForm(forms.Form):
                 # }
             )
         return account, action
-
-
-class SendResetEmailForm(UserActionForm):
-    # amount = forms.IntegerField(
-    #     min_value=Account.MIN_WITHDRAW,
-    #     max_value=Account.MAX_WITHDRAW,
-    #     required=True,
-    #     help_text='How much to withdraw?',
-    # )
-    email_body_template = 'email/account/withdraw.txt'
-    field_order = (
-        # 'amount',
-        # 'comment',
-        # 'send_email',
-    )
-
-    def save(self, account, user):
-        subject_template_name = 'registration/password_reset_subject.txt',
-        email_template_name = 'registration/password_reset_email.html',
-        token_generator = default_token_generator
-        html_email_template_name = None
-        email = account.email
-
-        context = {
-            'email': email,
-            'domain': domain,
-            'site_name': site_name,
-            'uid': urlsafe_base64_encode(force_bytes(account.pk)).decode(),
-            'user': account,
-            'token': token_generator.make_token(user),
-            'protocol': 'https',
-        }
-        PasswordResetForm.send_mail(
-            subject_template_name, email_template_name, context, settings.DEFAULT_FROM_EMAIL,
-            email, html_email_template_name=html_email_template_name,
-        )
