@@ -219,21 +219,22 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Dropship CEO'
 ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'henrywilliam@gmail.com'
-EMAIL_HOST_PASSWORD = 'Marketing1122'
-EMAIL_PORT = 587
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'henrywilliam@gmail.com'
+# EMAIL_HOST_PASSWORD = 'Marketing1122'
+# EMAIL_PORT = 587
 
-# EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-# EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
-# EMAIL_HOST_USER = 'AKIAJHHB7X2UXZC2BGMA'
-# EMAIL_HOST_PASSWORD = 'AtnjYEtIKwKvCiH1oDt1p1Db/kf/fgwim3laZsfHowVC'
-
-# smtplib.SMTP use port 25，smtplib.SMTP_SSL use 465
-# EMAIL_PORT = 465
+# SES creds
+EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+EMAIL_HOST_USER = 'AKIAJHHB7X2UXZC2BGMA'
+EMAIL_HOST_PASSWORD = 'AtnjYEtIKwKvCiH1oDt1p1Db/kf/fgwim3laZsfHowVC'
+DEFAULT_FROM_EMAIL = 'Dropship CEO<no-reply@dropship.ceo>'
+EMAIL_PORT = 465    # smtplib.SMTP uses port 25，smtplib.SMTP_SSL uses 465
 
 EMAIL_USE_TLS = True
+
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 OLD_PASSWORD_FIELD_ENABLED = True

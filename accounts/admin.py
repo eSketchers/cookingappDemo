@@ -31,8 +31,6 @@ class UserAdmin(BaseUserAdmin):
         'account_actions',
     )
     readonly_fields = (
-        'email',
-        'is_admin',
         'account_actions',
     )
     list_filter = ('is_admin',)
@@ -111,7 +109,7 @@ class UserAdmin(BaseUserAdmin):
         msg.attach_alternative(message, "text/html")
         msg.send()
 
-        messages.success(request, 'Email sent to {}'.format(to_email))
+        messages.success(request, 'Reset password email sent to {}'.format(to_email))
 
         return HttpResponseRedirect(reverse('admin:accounts_user_changelist'))
 

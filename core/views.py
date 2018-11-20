@@ -767,8 +767,23 @@ class ProductsFeedView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def get_queryset(self):
-        queryset = FeedProducts.objects.filter(user=self.request.user.id)
+        brand_name = self.request.query_params.get('name', None)
+        if brand_name:
+            queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
+        else:
+            queryset = FeedProducts.objects.filter(user=self.request.user.id)
         return queryset
+
+
+class UserVendorsAPIView(generics.GenericAPIView):
+    """List all products of requested store."""
+
+    # pagination_class = LargeResultsSetPagination
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.request.user.user_feed.values_list('brand_name', flat=True)
+        return Response({'success': True, 'data': queryset}, status=status.HTTP_200_OK)
 
 
 class TestHook(APIView):

@@ -62,7 +62,7 @@ class TokenSerializer(serializers.Serializer):
 
                 stripe_subscription = stripe.Subscription.create(
                     customer=customer_id,
-                    cancel_at_period_end= True,
+                    cancel_at_period_end=True,
                     items=[
                         {
                             "plan": plan.plan_id,
@@ -81,7 +81,8 @@ class TokenSerializer(serializers.Serializer):
 
         except stripe.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
-            payload.update({'error': e.user_message})
+            # payload.update({'error': e.user_message})
+            payload.update({'error': 'We could not could not process payment. Please try later.'})
             payload.update({'success': False})
         except stripe.error.AuthenticationError as e:
             # Authentication with Stripe's API failed

@@ -3,6 +3,7 @@ import uuid
 
 import shopify
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import RedirectView, TemplateView
@@ -22,11 +23,12 @@ class ShopifyAuth(RedirectView):
         state = str(uuid.uuid1())
         scope = 'write_products'
         scopes = ['write_products']
-        forwardingAddress = 'https://798392c1.ngrok.io'
+        current_site = get_current_site(self.request)
+        # forwardingAddress = 'https://0bb9d90f.ngrok.io'
+        forwardingAddress = current_site.domain
         redirectUri = forwardingAddress + '/shopify/callback'
         shop = self.request.GET.get('shop')
         installUrl = None
-
 
         if shop:
             # session = shopify.Session("SHOP_NAME.myshopify.com")

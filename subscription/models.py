@@ -26,12 +26,17 @@ class StripeUser(models.Model):
 
 class SubscriptionPlan(models.Model):
     MONTHLY = 'MON'
+    SIX_MONTH = 'SIX_MON'
     ANNUAL = 'AN'
     FREE = 'FR'
+    CUSTOM = 'CUSTOM'
+
     PLAN_TYPE_CHOICES = (
         (MONTHLY, 'MON'),
+        (SIX_MONTH,'SIX_MON'),
         (ANNUAL, 'AN'),
         (FREE, 'FR'),
+        (CUSTOM, 'CUSTOM'),
     )
 
     name = models.CharField(default='', max_length=255, blank=False, null=False)

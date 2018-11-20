@@ -24,7 +24,7 @@ class InfluencerAdmin(admin.ModelAdmin):
 
 
 class CustomProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'type', 'released_date','is_active']
+    list_display = ['title', 'type', 'released_date', 'is_active']
     exclude = ('profit','is_active')
     search_fields = ('title',)
 
@@ -40,7 +40,7 @@ class FeedBackAdmin(admin.ModelAdmin):
 
 
 class KeywordAdmin(admin.ModelAdmin):
-    list_display = ['key', 'cpc', 'volume', 'region',]
+    list_display = ['key', 'cpc', 'volume', 'region', ]
     exclude = ('profitability','profit',)
     search_fields = ('key',)
 
@@ -54,7 +54,7 @@ class KeywordAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ['name', 'is_active', 'created_at' ]
+    list_display = ['name', 'is_active', 'created_at']
     search_fields = ('name',)
 
 
@@ -80,12 +80,12 @@ class TrainingVideoAdmin(admin.ModelAdmin):
 
 class RssFeedAdmin(admin.ModelAdmin):
     list_display = ['brand_name', 'brand_url', 'user']
-    search_fields = ('brand_url','brand_name')
+    search_fields = ('brand_url', 'brand_name')
 
 
 class TrendingProductAdmin(admin.ModelAdmin):
-    list_display = ['user','created_at','updated_at']
-    search_fields = ('user',)
+    list_display = ['user', 'created_at', 'updated_at']
+    search_fields = ('user', )
 
 
 class FeedStoreAdmin(admin.ModelAdmin):
@@ -107,6 +107,7 @@ admin.site.register(SavedLookupProduct)
 admin.site.register(BookmarkedProducts)
 
 # admin.site.unregister(CronStatus)
+admin.site.register(FeedProducts)
 admin.site.register(FeedStore, FeedStoreAdmin)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
