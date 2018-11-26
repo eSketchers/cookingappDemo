@@ -46,7 +46,6 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
 class CustomRegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
     password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
     first_name = serializers.CharField(
         max_length=255,
         required= False
@@ -77,12 +76,6 @@ class CustomRegisterSerializer(serializers.Serializer):
         max_length=5000
     )
 
-
-
-    # def validate_username(self, username):
-    #     username = get_adapter().clean_username(username)
-    #     return username
-
     def validate_email(self, email):
         email = get_adapter().clean_email(email)
         if allauth_settings.UNIQUE_EMAIL:
@@ -93,11 +86,6 @@ class CustomRegisterSerializer(serializers.Serializer):
 
     def validate_password1(self, password):
         return get_adapter().clean_password(password)
-
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
-        return data
 
     def custom_signup(self, request, user):
         """

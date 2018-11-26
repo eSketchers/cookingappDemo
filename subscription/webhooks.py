@@ -1,5 +1,4 @@
 import json
-
 import logging
 import stripe
 from django.conf import settings
@@ -24,8 +23,6 @@ stripe_events = {
     'subscription_deleted': 'customer.subscription.deleted',
     'subscription_updated': 'customer.subscription.updated'
 }
-
-
 
 
 class WebHooksView(APIView):
