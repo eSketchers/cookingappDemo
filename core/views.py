@@ -213,8 +213,15 @@ class ListRss(APIView):
     permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def get(self, request, format=None):
-        feeds = RssFeed.objects.filter(user=request.user)
-        serializer = FeedsSerializer(feeds, many=True)
+
+        # Temporary change.
+        # state = request.query_params.get('q', None)
+        # if state:
+        #     qs = RssFeed.objects.filter(user=request.user, saved_feed=state.capitalize())
+        # else:
+        #     qs = RssFeed.objects.none()
+        qs = RssFeed.objects.filter(user=request.user)
+        serializer = FeedsSerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

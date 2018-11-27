@@ -25,7 +25,6 @@ urlpatterns = [
   url(r'^feedstore/d/(?P<pk>[0-9]+)/$', FeedlyView.as_view(), name='remove-feeds'),
   url(r'^products/feed/$', ProductsFeedView.as_view(), name='products-feed'),
   url(r'^user-vendors/$', UserVendorsAPIView.as_view(), name='user-vendors'),
-
   url(r'^hoosket/$', TestHook.as_view(), name='test-hook'),
   url(r'^zap_create_user_sub/$', ClickFunnelUserCreateWithSubscription.as_view(), name='zap-create-user-sub'),
 

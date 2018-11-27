@@ -67,6 +67,7 @@ class SubscriptionPlan(models.Model):
     class Meta:
         verbose_name = 'Subscription Plan'
         verbose_name_plural = 'Subscription Plans'
+        ordering = ['-id']
 
     def delete(self, using=None, keep_parents=False):
         if self.type == self.FREE:
