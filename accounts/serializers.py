@@ -46,6 +46,7 @@ class CustomUserDetailsSerializer(UserDetailsSerializer):
 class CustomRegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
     password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
     first_name = serializers.CharField(
         max_length=255,
         required= False
