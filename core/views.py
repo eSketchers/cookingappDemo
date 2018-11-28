@@ -695,7 +695,7 @@ class ClickFunnelUserCreateWithSubscription(APIView):
                     else:
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
-                        user_sub.is_actice = True
+                        user_sub.is_active = True
                         user_sub.save()
                 except Exception as e:
                     logger.error("something bad happened -{0} -- {1}".format(user.email, e.args))

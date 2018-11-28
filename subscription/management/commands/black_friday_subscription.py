@@ -77,6 +77,7 @@ class Command(BaseCommand):
         # BLack Friday plan id
         _plan_id = 'plan_E26xB08m5M6NsO'
         _sub_id = None
+        user_sub = None
         try:
             _sub_id = data['sub_id']
         except Exception as e:
@@ -105,13 +106,16 @@ class Command(BaseCommand):
             if _sub_id:
                 try:
                     plan = SubscriptionPlan.objects.filter(plan_id=_plan_id).first()
-                    user_sub = user.subscription.get(is_active=True)
-                    if user_sub:
+                    user_sub = user.first().subscription.filter(is_active=True).first()
+                    if user_sub is not None:
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.save()
                     else:
-                        logger.error("no active subscription found for -{0}".format(user.email))
+                        user_sub.subscription = _sub_id
+                        user_sub.plan = plan
+                        user_sub.is_active = True
+                        user_sub.save()
                 except Exception as e:
                     logger.error("something bad happened -{0} -- {1}".format(user.email, e.args))
             else:
