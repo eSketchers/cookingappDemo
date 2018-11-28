@@ -28,6 +28,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = (
         'email',
         'is_admin',
+        'last_login',
         'account_actions',
     )
     readonly_fields = (
