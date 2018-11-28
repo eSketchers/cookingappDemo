@@ -693,6 +693,7 @@ class ClickFunnelUserCreateWithSubscription(APIView):
                         user_sub.plan = plan
                         user_sub.save()
                     else:
+                        user_sub = user.first().subscription.filter(is_active=False).first()
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.is_active = True

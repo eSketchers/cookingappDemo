@@ -106,12 +106,13 @@ class Command(BaseCommand):
             if _sub_id:
                 try:
                     plan = SubscriptionPlan.objects.filter(plan_id=_plan_id).first()
-                    user_sub = user.first().subscription.filter(is_active=True).first()
+                    user_sub = user.subscription.filter(is_active=True).first()
                     if user_sub is not None:
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.save()
                     else:
+                        user_sub = user.subscription.filter(is_active=False).first()
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.is_active = True
@@ -132,7 +133,11 @@ class Command(BaseCommand):
                         user_sub.plan = plan
                         user_sub.save()
                     else:
-                        logger.error("no active subscription found for -{0}".format(user.email))
+                        user_sub = user.first().subscription.filter(is_active=False).first()
+                        user_sub.subscription = _sub_id
+                        user_sub.plan = plan
+                        user_sub.is_active = True
+                        user_sub.save()
                 except Exception as e:
                     logger.error("something bad happened -{0} -- {1}".format(user.email, e.args))
             else:
