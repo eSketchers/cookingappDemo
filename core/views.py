@@ -665,6 +665,7 @@ class ClickFunnelUserCreateWithSubscription(APIView):
 
         _plan_id = data.get('plan_id', None)
         _sub_id = data.get('subscription_id', None)
+        user_sub = None
 
         if user.exists() is False:
             random_data = os.urandom(128)
@@ -685,14 +686,17 @@ class ClickFunnelUserCreateWithSubscription(APIView):
             if _sub_id:
                 try:
                     plan = SubscriptionPlan.objects.filter(plan_id=_plan_id).first()
-                    user_sub = user.first().subscription.get(is_active=True)
-                    if user_sub:
+                    user_sub = user.first().subscription.filter(is_active=True).first()
+                    if user_sub is not None:
                         # if user_sub.subscription != _sub_id:
                         user_sub.subscription = _sub_id
                         user_sub.plan = plan
                         user_sub.save()
                     else:
-                        logger.error("no active subscription found for -{0}".format(user.email))
+                        user_sub.subscription = _sub_id
+                        user_sub.plan = plan
+                        user_sub.is_actice = True
+                        user_sub.save()
                 except Exception as e:
                     logger.error("something bad happened -{0} -- {1}".format(user.email, e.args))
 
