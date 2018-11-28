@@ -8,6 +8,8 @@ from django.utils.encoding import smart_str
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from subscription.emails_hookset import hookset
+import datetime
 
 import subscription.models as subscription_app
 
@@ -21,7 +23,8 @@ stripe_events = {
     'payment_succeeded': 'invoice.payment_succeeded',
     'invoice_created': 'invoice.created',
     'subscription_deleted': 'customer.subscription.deleted',
-    'subscription_updated': 'customer.subscription.updated'
+    'subscription_updated': 'customer.subscription.updated',
+    'subscription_trail_end': 'customer.subscription.trial_will_end'
 }
 
 
@@ -45,23 +48,12 @@ class WebHooksView(APIView):
             subscription_app.EventLogs.objects.create(name=event_type, payload=data)
             if event_type == stripe_events.get('subscription_deleted'):
                 status_code = self.subscription_deleted(data)
+            elif event_type == stripe_events.get('subscription_trail_end'):
+                status_code = self.subscription_trail_end(data)
         except Exception as e:
             status_code = 400
             logger.error('webhook event log error')
-        # if event_type:
-        # if data['type'] == stripe_events.get('payment_failed'):
-        #     self.failed_payment(data)
-        # elif data['type'] == stripe_events.get('subscription_deleted'):
-        #     self.subscription_deleted(data)
-        # elif data['type'] == stripe_events.get('payment_succeeded'):
-        #     self.payment_succeed(data)
-        # elif data['type'] == stripe_events.get('invoice.created'):
-        #     self.invoice_created(data)
-        # elif data['type'] == stripe_events.get('subscription_updated'):
-        #     self.subscription_update(data)
-
-        # result = self.save_webhook(data)
-        return Response("request handled", status=status_code)
+        return Response("Request handled successfully.", status=status_code)
 
     def subscription_deleted(self, data):
         """
@@ -145,3 +137,83 @@ class WebHooksView(APIView):
 
         # verified
         return 200
+
+    def subscription_trail_end(self, data):
+        """
+        handle stripe webhook for subscription trail period ends
+        :param data: request.body in json format
+        :return: status (eg. 200, 400) to be returned to stripe
+        """
+        try:
+            type = stripe_events.get('subscription_trail_end')
+            customer = data['data']['object']['customer']
+
+            trail_end = data['data']['object']['trial_end']
+            trail_end = datetime.datetime.fromtimestamp(trail_end)
+            trail_end = trail_end.strftime('%d %B %Y')
+
+            plan_name = data['data']['object']['plan']['nickname']
+
+            # check if user exists against customer
+            customer_info = subscription_app.StripeUser.objects.filter(customer=customer).first()
+            user = None
+
+            if not customer_info:
+                try:
+                    stripe_customer = stripe.Customer.retrieve(customer)
+                    email = stripe_customer.email
+                    user = User.objects.filter(email=email).first()
+                except Exception as e:
+                    logger.error('Stripe customer retrieve error.')
+            else:
+                user = customer_info.user
+
+            # check if user exists against this customer id.
+            if user:
+                # Email to user its trail period ends on.
+                to = [user.email]
+                ctx = { 'plan': plan_name,
+                        'end_date': trail_end,
+                        'user' : user,
+                       }
+                hookset.trail_end_email(to=to, ctx=ctx)
+            return 200
+        except Exception as e:
+            return 400
+
+    def invoice_created(self, data):
+        """
+                handle stripe webhook for subscription trail period ends
+                :param data: request.body in json format
+                :return: status (eg. 200, 400) to be returned to stripe
+                """
+        try:
+            type = stripe_events.get('subscription_trail_end')
+            customer = data['data']['object']['customer']
+
+            # check if user exists against customer
+            customer_info = subscription_app.StripeUser.objects.filter(customer=customer).first()
+            user = None
+
+            if not customer_info:
+                try:
+                    stripe_customer = stripe.Customer.retrieve(customer)
+                    email = stripe_customer.email
+                    user = User.objects.filter(email=email).first()
+                except Exception as e:
+                    logger.error('Stripe customer retrieve error.')
+            else:
+                user = customer_info.user
+
+            # check if user exists against this customer id.
+            # user could not be in our db due to duplicated entries being rejected by our system during zaps receive
+            if user:
+                # Email to user its trail period ends on.
+                to = [user.email]
+                ctx = {'plan': 'testing plan',
+                       'end_date': '34-44-44',
+                       }
+                hookset.trail_end_email(to=to, ctx=ctx)
+            return 200
+        except Exception as e:
+            return 400
