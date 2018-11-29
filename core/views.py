@@ -225,6 +225,25 @@ class ListRss(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class UserSearchListing(APIView):
+    """ This is according to new design
+        Show all searched urls of specific user,
+        in his Stores component.
+    """
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
+
+    def get(self, request, format=None):
+
+        # Temporary change.
+        state = request.query_params.get('q', None)
+        if state:
+            qs = RssFeed.objects.filter(user=request.user, saved_feed=state.capitalize())
+        else:
+            qs = RssFeed.objects.none()
+        serializer = FeedsSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class FavoriteFeeds(APIView):
     """
        List all favorite feeds.
