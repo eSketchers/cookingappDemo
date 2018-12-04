@@ -398,9 +398,9 @@ class CustomProductList(generics.ListAPIView):
         order = self.request.query_params.get('order_by', None)
 
         if min_range and max_range:
-            self.queryset = self.queryset.filter(selling_price__range=(min_range, max_range))
+            self.queryset = self.queryset.filter(actual_price__range=(min_range, max_range))
         elif (min_range and not max_range):
-            self.queryset = self.queryset.filter(selling_price__gte=min_range)
+            self.queryset = self.queryset.filter(actual_price__gte=min_range)
 
         if order:
             # lp = lowest price
@@ -408,9 +408,9 @@ class CustomProductList(generics.ListAPIView):
             # da = date added price
 
             if order == 'lp':
-                self.queryset = self.queryset.order_by('selling_price')
+                self.queryset = self.queryset.order_by('actual_price')
             elif order == 'hp':
-                self.queryset = self.queryset.order_by('-selling_price')
+                self.queryset = self.queryset.order_by('-actual_price')
                 # elif (order == 'da'):
                 #     self.queryset = self.queryset.order_by('-created_at')
 
@@ -798,12 +798,28 @@ class ProductsFeedView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def get_queryset(self):
+        min_range = self.request.query_params.get('min_range', None)
+        max_range = self.request.query_params.get('max_range', None)
+        order = self.request.query_params.get('order_by', None)
         brand_name = self.request.query_params.get('name', None)
+
         if brand_name:
-            queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
+            self.queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
         else:
-            queryset = FeedProducts.objects.filter(user=self.request.user.id)
-        return queryset
+            self.queryset = FeedProducts.objects.filter(user=self.request.user.id)
+
+        if min_range and max_range:
+            self.queryset = self.queryset.filter(price__range=(min_range, max_range))
+        elif (min_range and not max_range):
+            self.queryset = self.queryset.filter(price__gte=min_range)
+
+        if order:
+            if order == 'lp':
+                self.queryset = self.queryset.order_by('price')
+            elif order == 'hp':
+                self.queryset = self.queryset.order_by('-price')
+
+        return self.queryset
 
 
 class UserVendorsAPIView(generics.GenericAPIView):
