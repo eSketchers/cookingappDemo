@@ -833,27 +833,12 @@ class ProductsFeedView(generics.ListAPIView):
     queryset = FeedProducts.objects.all().order_by('-created_at')
 
     def get_queryset(self):
-        min_range = self.request.query_params.get('min_range', None)
-        max_range = self.request.query_params.get('max_range', None)
-        order = self.request.query_params.get('order_by', None)
         brand_name = self.request.query_params.get('name', None)
-        self.queryset = self.queryset.filter(user=self.request.user)
-
         if brand_name:
-            self.queryset = self.queryset.filter(vendor=brand_name)
-
-        if min_range and max_range:
-            self.queryset = self.queryset.filter(price__range=(min_range, max_range))
-        elif (min_range and not max_range):
-            self.queryset = self.queryset.filter(price__gte=min_range)
-
-        if order:
-            if order == 'lp':
-                self.queryset = self.queryset.order_by('price')
-            elif order == 'hp':
-                self.queryset = self.queryset.order_by('-price')
-
-        return self.queryset
+            queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
+        else:
+            queryset = FeedProducts.objects.filter(user=self.request.user.id)
+        return queryset
 
 
 class UserVendorsAPIView(generics.GenericAPIView):
