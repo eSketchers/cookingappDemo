@@ -93,6 +93,11 @@ class FeedStoreAdmin(admin.ModelAdmin):
     search_fields = ('user', 'brand_name')
 
 
+class FeedsProductsAdmin(admin.ModelAdmin):
+    list_display = ['title', 'type', 'vendor']
+    search_fields = ('user', 'vendor', 'title')
+
+
 # Register your models here.
 admin.site.register(RssFeed, RssFeedAdmin)
 admin.site.register(FavoriteSite)
@@ -107,7 +112,7 @@ admin.site.register(SavedLookupProduct)
 admin.site.register(BookmarkedProducts)
 
 # admin.site.unregister(CronStatus)
-admin.site.register(FeedProducts)
+admin.site.register(FeedProducts, FeedsProductsAdmin)
 admin.site.register(FeedStore, FeedStoreAdmin)
 # admin.site.unregister(StoreUrl, StoreAdmin)
 # admin.site.unregister(ProductDetail, ProductAdmin)
