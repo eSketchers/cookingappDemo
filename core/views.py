@@ -837,7 +837,7 @@ class ProductsFeedView(generics.ListAPIView):
         max_range = self.request.query_params.get('max_range', None)
         order = self.request.query_params.get('order_by', None)
         brand_name = self.request.query_params.get('name', None)
-        self.queryset = self.queryset.filter(user=self.request.user.id)
+        # self.queryset = self.queryset.filter(user=self.request.user.id)
 
         if brand_name:
             self.queryset = self.queryset.filter(vendor=brand_name)
