@@ -94,8 +94,8 @@ class FeedStoreAdmin(admin.ModelAdmin):
 
 
 class FeedsProductsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'type', 'vendor']
-    search_fields = ('vendor', 'title')
+    list_display = ['title', 'type', 'vendor', 'user__email']
+    search_fields = ('user__email', 'vendor', 'title')
 
 
 # Register your models here.
