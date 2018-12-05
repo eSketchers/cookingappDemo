@@ -487,7 +487,8 @@ class TrainingVideoView(generics.ListAPIView):
 
 class BookmarkProductsView(APIView):
     """
-       Save/Delete and List bookmarked products.
+       API Endpoint to save user products as a
+       user bookmarked product.
     """
     permission_classes = (IsAuthenticated, HasActiveSubscription    )
 
@@ -609,6 +610,39 @@ class BookmarkProductsView(APIView):
             logger.debug('product mapping error {0}', e)
 
         return product
+
+
+class ListBookmarkedProducts(generics.ListAPIView):
+
+    serializer_class = BookmarkProductSerializer
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
+    pagination_class = LargeResultsSetPagination
+    queryset = BookmarkedProducts.objects.all().order_by('-created_at')
+
+
+    def get_queryset(self):
+        min_range = self.request.query_params.get('min_range', None)
+        max_range = self.request.query_params.get('max_range', None)
+        order = self.request.query_params.get('order_by', None)
+
+        self.queryset = self.queryset.filter(user=self.request.user)
+
+        if min_range and max_range:
+           self.queryset = self.queryset.filter(price__range=(min_range, max_range))
+        elif (min_range and not max_range):
+            self.queryset = self.queryset.filter(price__gte=min_range)
+
+        if order:
+            # lp = lowest price
+            # hp = highest price
+            # da = date added price
+
+            if order == 'lp':
+                self.queryset = self.queryset.order_by('price')
+            elif order == 'hp':
+                self.queryset = self.queryset.order_by('-price')
+
+        return self.queryset
 
 
 class ClickFunnelUserCreate(APIView):

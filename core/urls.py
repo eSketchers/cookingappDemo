@@ -28,5 +28,5 @@ urlpatterns = [
   url(r'^user-vendors/$', UserVendorsAPIView.as_view(), name='user-vendors'),
   url(r'^hoosket/$', TestHook.as_view(), name='test-hook'),
   url(r'^zap_create_user_sub/$', ClickFunnelUserCreateWithSubscription.as_view(), name='zap-create-user-sub'),
-
+  url(r'^list-save/$', ListBookmarkedProducts.as_view(), name='list-items'),
 ]
