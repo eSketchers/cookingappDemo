@@ -830,18 +830,17 @@ class ProductsFeedView(generics.ListAPIView):
     serializer_class = ProductFeedSerializer
     pagination_class = LargeResultsSetPagination
     permission_classes = (IsAuthenticated, HasActiveSubscription)
+    queryset = FeedProducts.objects.all().order_by('-created_at')
 
     def get_queryset(self):
         min_range = self.request.query_params.get('min_range', None)
         max_range = self.request.query_params.get('max_range', None)
         order = self.request.query_params.get('order_by', None)
         brand_name = self.request.query_params.get('name', None)
-        self.queryset = FeedProducts.objects.filter(user=self.request.user.id)
+        self.queryset = self.queryset.filter(user=self.request.user.id)
 
         if brand_name:
-            self.queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
-        else:
-            self.queryset = FeedProducts.objects.filter(user=self.request.user.id)
+            self.queryset = self.queryset.filter(vendor=brand_name)
 
         if min_range and max_range:
             self.queryset = self.queryset.filter(price__range=(min_range, max_range))
