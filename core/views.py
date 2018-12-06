@@ -37,12 +37,16 @@ comprehend = boto3.client(service_name='comprehend', region_name='us-east-1')
 
 
 class ListData(APIView):
-    """Get Xml of input store and
-       list its products feeds into feeds component.
+    """ Scrape data of requested store url,
+        make a json of products as a feeds.
+        :param APIVIEW: Inherit generic apiview.
+        :return Feeds: On success:contains products list.
+                       otherwise respective error.
     """
     permission_classes = (IsAuthenticated, HasActiveSubscription)
 
     def post(self, request):
+        """Get store url from posted data."""
         url = request.data['link']
         page_res = self.get_page(url)
         if page_res['response']:
@@ -50,22 +54,11 @@ class ListData(APIView):
 
         return Response(page_res['error'], status=page_res['status'])
 
-        # elif page_res['error']:
-        #     # if page_res['status_code'] == 430:
-        #     #     return Response(page_res['error'], status=page_res['status_code'])
-        #     # elif page_res['status_code'] == 404:
-        #     #     error = "Store url is invalid."
-        #     #     return Response(error, status=page_res['status_code'])
-        #     # elif page_res['status_code'] == 503:
-        #     #     error = "Store is currently down or having some other issues. Try later"
-        #     #     return Response(error, status=page_res['status_code'])
-        #     else:
-        #         return Response(page_res['error'], status=page_res['status_code'])
-        # else:
-        #     url_error = "Response of url is not available."
-        #     return Response(url_error, status=status.HTTP_404_NOT_FOUND)
-
     def get_product_feeds(self, page_res):
+        """ Make products feeds and
+            append it in list to send in response.
+            Add store to search models as history.
+        """
         result = []
         variants = []
         product_details = {}
@@ -174,6 +167,7 @@ class ListData(APIView):
         return payload
 
     def get_the_store(self, response):
+        """ Handle exceptions according to shopify stores."""
         payload = {}
         if response.status_code == 200:
             res_dict = xmltodict.parse(response.text)
@@ -190,6 +184,9 @@ class ListData(APIView):
         return payload
 
     def get_full_link(self, link):
+        """ Check protocol of requested url and
+            Append xml format end of requested url.
+        """
         scheme = None
         host = None
         try:
@@ -295,15 +292,21 @@ class ListTrendingProduct(APIView):
 
 
 class SimilarKeyword(APIView):
-
+    """View to list similar keywords
+       from third party api(dataforseo).
+    :param
+    :return Similar keywords.
+    """
     def post(self, *args, **kwargs):
 
         email = "henrywilliam2020@gmail.com"
         password = "a6B7Ftr5K4uWjxkl"
         longest = 0
 
+        # User authentication "dataforseo"
         client = RestClient(email,password)
 
+        # get longest keyword from amazon api.
         try:
             key_phrase = comprehend.detect_key_phrases(Text=self.request.data['keyword'], LanguageCode='en')
             len_result = len(key_phrase['KeyPhrases'])
@@ -317,6 +320,7 @@ class SimilarKeyword(APIView):
         except Exception as e:
             s_keyword = self.request.data['keyword']
 
+        # send keyword to dataforseo with filters.
         post_data = dict()
         post_data["1"] = dict(
             keyword= s_keyword,
@@ -348,7 +352,24 @@ class SimilarKeyword(APIView):
             return Response(response["results"]['1'], status=status.HTTP_200_OK)
 
 
+class InfluencerCategory(generics.ListAPIView):
+    """View to list influencers categories
+    :return queryset: contains categories as a serialize data.
+    """
+
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        queryset = Influencer.objects.values('type').distinct()
+        return queryset
+
+
 class InfluencerList(generics.ListAPIView):
+    """ List instagram influencers accounts info.
+        :param
+        :return queryset: contains influencers list.
+    """
+
     permission_classes = (IsAuthenticated, HasActiveSubscription)
     serializer_class = InfluencerSerializer
     pagination_class = LargeResultsSetPagination
@@ -383,6 +404,11 @@ class InfluencerList(generics.ListAPIView):
 
 
 class CustomProductList(generics.ListAPIView):
+    """ Products added by user from admin panel
+        as a hot products.
+    :param Inherit api view.
+    :return queryset: Contains hot products whose status is active.
+    """
 
     serializer_class = CustomProductSerializer
     permission_classes = (IsAuthenticated, HasActiveSubscription)
@@ -418,6 +444,9 @@ class CustomProductList(generics.ListAPIView):
 
 
 class FeedBackView(APIView):
+    """View to store users feedback.
+       Show into admin panel.
+    """
 
     def post(self, request, format=None):
         response = {}
@@ -437,15 +466,6 @@ class FeedBackView(APIView):
         return Response(response, status=status_code)
 
 
-class InfluencerCategory(generics.ListAPIView):
-
-    serializer_class = CategorySerializer
-
-    def get_queryset(self):
-        queryset = Influencer.objects.values('type').distinct()
-        return queryset
-
-
 class KeywordProductView(APIView):
 
     def post(self, request, format=None):
@@ -455,40 +475,10 @@ class KeywordProductView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class VideoGroupView(generics.ListAPIView):
-    """View to list training video groups.
-    Args:
-        :param generics.LISTAPIView: Inherit Base Mixin.
-    Returns:
-        queryset: Contains all groups details.
-    """
-
-    serializer_class = VideoGroupSerializer
-
-    def get_queryset(self):
-        queryset = VideoGroup.objects.filter(is_active=True)
-        return queryset
-
-
-class TrainingVideoView(generics.ListAPIView):
-    """View to list training video.
-    Args:
-        :param generics.LISTAPIView: Inherit Base Mixin.
-    Returns:
-        queryset: Contains all videos related to group name.
-    """
-
-    serializer_class = TrainingVideoSerializer
-
-    def get_queryset(self):
-        queryset = TrainingVideo.objects.filter(is_active=True).order_by('-created_at')
-        return queryset
-
-
 class BookmarkProductsView(APIView):
     """
-       API Endpoint to save user products as a
-       user bookmarked product.
+       API Endpoint to save different products into
+       bookmarked product model.
     """
     permission_classes = (IsAuthenticated, HasActiveSubscription    )
 
@@ -645,6 +635,152 @@ class ListBookmarkedProducts(generics.ListAPIView):
         return self.queryset
 
 
+class FeedlyView(APIView):
+    """ APIVIEW to manage competitor store feeds
+    :param [APIVIEW]: Inherit base class.
+    :return serialize data contains stores add to
+            competitor feeds.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        feeds = FeedStore.objects.filter(user=request.user)
+        serializer = FeedStoreSerializer(feeds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        """Add store to user competitor stores."""
+        response = {}
+        feeds_count = FeedStore.objects.filter(user=request.user).count()
+        if feeds_count < 10:
+            try:
+                FeedStore.objects.create(user=request.user,
+                                         feed_id = request.data['id'],
+                                         brand_url = request.data['brand_url'],
+                                         brand_name = request.data['brand-name'],
+                                         )
+                RssFeed.objects.filter(id=request.data['id']).update(saved_feed=True)
+                response.update({'success':True})
+                status_code = status.HTTP_201_CREATED
+            except Exception as e:
+                response.update({'success': False})
+                status_code = status.HTTP_403_FORBIDDEN
+        else:
+            response.update({'Message': "You have reached maximium limit to add store into your feeds."})
+            status_code = status.HTTP_200_OK
+        return Response(response, status=status_code)
+
+    def get_object(self, pk):
+        try:
+            return FeedStore.objects.get(feed_id=pk, user=self.request.user)
+        except RssFeed.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        obj.delete()
+        RssFeed.objects.filter(pk=pk).update(saved_feed=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductsFeedView(generics.ListAPIView):
+    """ APIVIEW to list all competitor feeds
+        :param LISTAPIVIEW: Inherit django listapiview.
+        :return queryset: Contains serialize data of authenticated user.
+    """
+
+    serializer_class = ProductFeedSerializer
+    pagination_class = LargeResultsSetPagination
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
+
+    def get_queryset(self):
+
+        min_range = self.request.query_params.get('min_range', None)
+        max_range = self.request.query_params.get('max_range', None)
+        order = self.request.query_params.get('order_by', None)
+        brand_name = self.request.query_params.get('name', None)
+        qs = FeedProducts.objects.filter(user=self.request.user.id)
+
+        if brand_name:
+            qs = qs.filter(vendor=brand_name)
+
+        if min_range and max_range:
+            qs = qs.filter(price__range = (min_range, max_range))
+        elif (min_range and not max_range):
+            qs = qs.filter(price__gte = min_range)
+
+        if order:
+            if order == 'lp':
+                qs = qs.order_by('price')
+            elif order == 'hp':
+                qs = qs.order_by('-price')
+
+        return qs
+
+
+class UserVendorsAPIView(generics.GenericAPIView):
+    """ List store names of competitor feeds.
+        :param APIVIEW: Inherit generic class.
+        :return queryset: contains json of brand names.
+    """
+
+    # pagination_class = LargeResultsSetPagination
+    permission_classes = (IsAuthenticated, HasActiveSubscription)
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.request.user.user_feed.values_list('brand_name', flat=True)
+        return Response({'success': True, 'data': queryset}, status=status.HTTP_200_OK)
+
+
+class VideoGroupView(generics.ListAPIView):
+    """View to list training video groups.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains all groups details.
+    """
+
+    serializer_class = VideoGroupSerializer
+
+    def get_queryset(self):
+        queryset = VideoGroup.objects.filter(is_active=True)
+        return queryset
+
+
+class TrainingVideoView(generics.ListAPIView):
+    """View to list training video.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains all videos related to group name.
+    """
+
+    serializer_class = TrainingVideoSerializer
+
+    def get_queryset(self):
+        queryset = TrainingVideo.objects.filter(is_active=True).order_by('-created_at')
+        return queryset
+
+
+class TrainingVideoDetailView(generics.ListAPIView):
+    """View to list detail of training video.
+    Args:
+        :param generics.LISTAPIView: Inherit Base Mixin.
+    Returns:
+        queryset: Contains video related to group name.
+    """
+
+    serializer_class = TrainingVideoSerializer
+
+    def get_queryset(self):
+        video_id = self.request.query_params['id']
+        if video_id is not None:
+            queryset = TrainingVideo.objects.filter(pk=int(video_id), is_active=True)
+        else:
+            queryset = TrainingVideo.objects.none()
+        return queryset
+
+
 class ClickFunnelUserCreate(APIView):
     """Create user by getting its email from
        webhook send by click funnels on
@@ -757,99 +893,6 @@ class ClickFunnelUserCreateWithSubscription(APIView):
             else:
                 logger.error("no sub_id found to update info for -{0}".format(user.email))
         return None
-
-
-class FeedlyView(APIView):
-    """User list, save and delete their searched store
-       from feedStore model.
-    """
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request, format=None):
-        feeds = FeedStore.objects.filter(user=request.user)
-        serializer = FeedStoreSerializer(feeds, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request, format=None):
-        response = {}
-        feeds_count = FeedStore.objects.filter(user=request.user).count()
-        if feeds_count < 10:
-            try:
-                FeedStore.objects.create(user=request.user,
-                                         feed_id = request.data['id'],
-                                         brand_url = request.data['brand_url'],
-                                         brand_name = request.data['brand-name'],
-                                         )
-                RssFeed.objects.filter(id=request.data['id']).update(saved_feed=True)
-                response.update({'success':True})
-                status_code = status.HTTP_201_CREATED
-            except Exception as e:
-                response.update({'success': False})
-                status_code = status.HTTP_403_FORBIDDEN
-        else:
-            response.update({'Message': "You have reached maximium limit to add store into your feeds."})
-            status_code = status.HTTP_200_OK
-
-        return Response(response, status=status_code)
-
-    def get_object(self, pk):
-        try:
-            return FeedStore.objects.get(feed_id=pk, user=self.request.user)
-        except RssFeed.DoesNotExist:
-            raise Http404
-
-    def delete(self, request, pk, format=None):
-        obj = self.get_object(pk)
-        obj.delete()
-        RssFeed.objects.filter(pk=pk).update(saved_feed=False)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TrainingVideoDetailView(generics.ListAPIView):
-    """View to list detail of training video.
-    Args:
-        :param generics.LISTAPIView: Inherit Base Mixin.
-    Returns:
-        queryset: Contains video related to group name.
-    """
-
-    serializer_class = TrainingVideoSerializer
-
-    def get_queryset(self):
-        video_id = self.request.query_params['id']
-        if video_id is not None:
-            queryset = TrainingVideo.objects.filter(pk=int(video_id), is_active=True)
-        else:
-            queryset = TrainingVideo.objects.none()
-        return queryset
-
-
-class ProductsFeedView(generics.ListAPIView):
-    """List all products of requested store."""
-
-    serializer_class = ProductFeedSerializer
-    pagination_class = LargeResultsSetPagination
-    permission_classes = (IsAuthenticated, HasActiveSubscription)
-    queryset = FeedProducts.objects.all().order_by('-created_at')
-
-    def get_queryset(self):
-        brand_name = self.request.query_params.get('name', None)
-        if brand_name:
-            queryset = FeedProducts.objects.filter(user=self.request.user.id, vendor=brand_name)
-        else:
-            queryset = FeedProducts.objects.filter(user=self.request.user.id)
-        return queryset
-
-
-class UserVendorsAPIView(generics.GenericAPIView):
-    """List all products of requested store."""
-
-    # pagination_class = LargeResultsSetPagination
-    permission_classes = (IsAuthenticated, HasActiveSubscription)
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.request.user.user_feed.values_list('brand_name', flat=True)
-        return Response({'success': True, 'data': queryset}, status=status.HTTP_200_OK)
 
 
 class TestHook(APIView):
