@@ -72,7 +72,7 @@ class EditUserApiView(APIView):
 
     def put(self, request, *args, **kwargs):
         user_instance = self.get_object()
-        serializer = CustomUserDetailsSerializer(user_instance, data=request.data, partial=True)
+        serializer = CustomUserDetailsSerializer(user_instance, data=request.data, context={'request':request}, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
