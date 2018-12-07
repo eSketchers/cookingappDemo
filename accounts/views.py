@@ -7,9 +7,14 @@ from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 from django.shortcuts import render
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from accounts.serializers import CustomUserDetailsSerializer, SerializeUserDetails
+from django.contrib.auth import get_user_model
+from accounts.custom_utils import IMAGE_EXT
 
-from accounts.serializers import CustomUserDetailsSerializer
-
+# Get the UserModel
+User = get_user_model()
 
 class CustomVerifyEmailView(APIView, ConfirmEmailView):
     permission_classes = (AllowAny,)
@@ -73,3 +78,25 @@ class EditUserApiView(APIView):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ImageUploadView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    allowed_methods = ('POST',)
+
+    def get_object(self):
+        return self.request.user
+
+    def post(self, request, format=None):
+        user_instance = self.get_object()
+        obj = request.FILES.get('image', None)
+        if obj is None:
+            raise ParseError("No Image selected.")
+        if not obj.content_type in IMAGE_EXT:
+            raise ParseError("Not a valid Image Extension.")
+        user_instance.picture.delete(False)
+        user_instance.picture.save(obj.name, obj, save=True)
+        serializer = SerializeUserDetails(instance=user_instance, context={'request':request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

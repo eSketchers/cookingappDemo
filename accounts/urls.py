@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from accounts.views import EditUserApiView
 from . import views
-
+from accounts.views import ImageUploadView
 from rest_auth.views import (
     LoginView, LogoutView, UserDetailsView, PasswordChangeView,
     PasswordResetView, PasswordResetConfirmView,
@@ -34,6 +34,7 @@ urlpatterns += [
     url(r'^login/google/$', views.GoogleLoginView.as_view(), name='google_login'),
     url(r'^logout/$', LogoutView.as_view(), name='rest_logout'),
     url(r'^edit/$', EditUserApiView.as_view(), name='user_edit'),
+    url(r'^image-upload/$', ImageUploadView.as_view(), name='image-upload'),
     url(r'^password/change/$', PasswordChangeView.as_view(),
         name='rest_password_change'),
     url(r'^$', UserDetailsView.as_view(), name='rest_user_details'),

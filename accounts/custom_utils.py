@@ -20,3 +20,6 @@ class CustomUtils:
 
     def get_confirmation_url(self, key):
         return self.get_frontend_base() + self.current_config.get('FRONT_END_CONFIRMATION_URL') + '=' + key
+
+
+IMAGE_EXT = ['image/png', 'image/jpeg' ]

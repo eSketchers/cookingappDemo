@@ -31,16 +31,40 @@ from accounts.forms import PasswordSetForm
 UserModel = get_user_model()
 
 
+class ImageUploadSerializer(UserDetailsSerializer):
+    """
+    User Profile Image upload serializer
+    """
+    class Meta:
+        model = UserModel
+        fields = ('picture')
+
+
+class SerializeUserDetails(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('id', 'email', 'first_name', 'last_name', 'date_of_birth',
+                  'picture','address_1',
+                  'address_2', 'telephone', 'post_code')
+        read_only_fields = ('email',)
+        extra_kwargs = {'password': {'write_only': True},
+                        'data_of_birth': {'required' : False}}
+
+
+
 class CustomUserDetailsSerializer(UserDetailsSerializer):
     """
     User model w/o password
     """
     class Meta:
         model = UserModel
-        fields = ('id', 'email', 'first_name', 'last_name', 'date_of_birth',
-                  'address_1', 'address_2', 'picture', 'telephone', 'post_code')
+        fields = ('id', 'email', 'first_name', 'last_name','picture',
+                  'address_1', 'address_2','telephone',
+                  'post_code')
         read_only_fields = ('email',)
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True},
+                        'data_of_birth': {'required' : False},}
 
 
 class CustomRegisterSerializer(serializers.Serializer):
