@@ -129,16 +129,12 @@ WSGI_APPLICATION = 'dropshipping.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE':'django.db.backends.postgresql',
-#         'NAME': '',
-#         'USER': '',
-#         'PASSWORD': '',
-#         'HOST': '',
-#         'PORT': '5432',
-#     }
-# }
+import dj_database_url
+
+DATABASES = {
+}
+
+DATABASES['default'] =  dj_database_url.config()
 
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -186,6 +182,8 @@ SOCIAL_AUTH_GOOGLE_KEY = '119661575145-uoa0ti4rkbrenac4gh38jp4u6ljsth7q.apps.goo
 REST_USE_JWT = True
 
 SITE_ID = 1
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -249,7 +247,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
