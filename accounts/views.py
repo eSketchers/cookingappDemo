@@ -16,7 +16,17 @@ from accounts.custom_utils import IMAGE_EXT
 # Get the UserModel
 User = get_user_model()
 
+
 class CustomVerifyEmailView(APIView, ConfirmEmailView):
+    """
+    Confirm user email from its access token after sign-up.
+    :param APIView: Inherit django api view.
+    :param ConfirmEmailView: Inherit allauth package ConfirmEmailView.
+    :param key: kwargs['key'] token send in email on sign up.
+    :return success message:
+
+    """
+
     permission_classes = (AllowAny,)
     allowed_methods = ('POST', 'OPTIONS', 'HEAD')
 
@@ -34,37 +44,35 @@ class CustomVerifyEmailView(APIView, ConfirmEmailView):
 
 class FacebookLoginView(SocialLoginView):
     """
-    View for providing social login using Facebook OAuth2
+    View for providing social login using Facebook OAuth2.
+
+    :param SocialLoginView: Inherit socialLoginView
+                            class from django allauth.
+    :return instance: User instance.
     """
     adapter_class = FacebookOAuth2Adapter
 
 
 class GoogleLoginView(SocialLoginView):
     """
-    View for providing social login using Facebook OAuth2
+    View for providing social login using google OAuth2.
+
+    :param SocialLoginView: Inherit socialLoginView
+                            class from django allauth.
+    :return instance: User instance.
     """
     adapter_class = GoogleOAuth2Adapter
 
 
-def social_login(request):
-    return render(request,'account/social_login.html')
-
-
-def reset_password_form(request, uidb64, token):
-    context = {
-        'uid': uidb64,
-        'token': token
-    }
-    return render(request,'account/password_reset_form.html', context=context)
-
-
-def home(request):
-    return render(request, 'home.html')
-
-
 class EditUserApiView(APIView):
+    """
+
+    Update user detail partially
+    :param APIView: Inherit django APIView.
+    :return response: serialize data as a response.
+
+    """
     permission_classes = (IsAuthenticated,)
-    # serializer_class = CustomUserDetailsSerializer
     allowed_methods = ('POST', 'PUT')
 
     def get_object(self):
@@ -82,6 +90,13 @@ class EditUserApiView(APIView):
 
 class ImageUploadView(APIView):
 
+    """Api Endpoint to upload user image.
+
+    :param APIView: Inherit django bass api view.
+    :param image: Contains file as a image.
+    :return instance: User detail instance.
+
+    """
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     allowed_methods = ('POST',)
@@ -100,3 +115,19 @@ class ImageUploadView(APIView):
         user_instance.picture.save(obj.name, obj, save=True)
         serializer = SerializeUserDetails(instance=user_instance, context={'request':request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+def social_login(request):
+    return render(request,'account/social_login.html')
+
+
+def reset_password_form(request, uidb64, token):
+    context = {
+        'uid': uidb64,
+        'token': token
+    }
+    return render(request,'account/password_reset_form.html', context=context)
+
+
+def home(request):
+    return render(request, 'home.html')

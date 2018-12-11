@@ -8,17 +8,14 @@ custom_utils = CustomUtils()
 
 
 class CustomAccountAdapter(DefaultAccountAdapter):
+    """ Inherit Default account adapter of django
+        allauth to customize email service.
+    """
     def send_confirmation_mail(self, request, emailconfirmation, signup):
-        # current_site = get_current_site(request)
-        # activate_url = self.get_email_confirmation_url(
-        #     request,
-        #     emailconfirmation)
-
         activate_url = custom_utils.get_confirmation_url(emailconfirmation.key)
         ctx = {
             "user": emailconfirmation.email_address.user,
             "activate_url": activate_url,
-            # "current_site": current_site,
             "key": emailconfirmation.key,
             "title": "Welcome",
         }

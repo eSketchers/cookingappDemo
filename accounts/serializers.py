@@ -41,7 +41,9 @@ class ImageUploadSerializer(UserDetailsSerializer):
 
 
 class SerializeUserDetails(serializers.ModelSerializer):
-
+    """
+        Serialize User model fields.
+    """
     class Meta:
         model = UserModel
         fields = ('id', 'email', 'first_name', 'last_name', 'date_of_birth',
@@ -50,7 +52,6 @@ class SerializeUserDetails(serializers.ModelSerializer):
         read_only_fields = ('email',)
         extra_kwargs = {'password': {'write_only': True},
                         'data_of_birth': {'required' : False}}
-
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):

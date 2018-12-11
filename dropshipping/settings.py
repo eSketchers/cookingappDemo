@@ -26,7 +26,7 @@ SECRET_KEY = 'g!bp6185czhoxtd=7&-x^glo-=*z66fd!v2pd2#m9c-v!34a9r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api.dropshipdynamo.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -50,33 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'corsheaders',
-    'core',
-    'subscription'
 ]
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/home/ubuntu/webapps/logs/dsd_logs/debug.log',
-        },
-        'error_logfile': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': '/home/ubuntu/webapps/logs/dsd_logs/error.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
@@ -88,6 +62,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'id',
             'email',
             'name',
+            'picture',
             'first_name',
             'last_name',
             'verified',
@@ -106,6 +81,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': [
             'profile',
             'email',
+            'picture',
         ],
         'AUTH_PARAMS': {
             'access_type': 'offline',
@@ -113,7 +89,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-
+SOCIALACCOUNT_AVATAR_SUPPORT = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -174,9 +150,9 @@ REST_FRAMEWORK = {
 
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    ),
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'rest_framework.renderers.JSONRenderer',
+    # ),
     'PAGE_SIZE': 100
 }
 
@@ -202,12 +178,14 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-SOCIAL_AUTH_FACEBOOK_KEY = '2094551937426308'  # App ID
+SOCIAL_AUTH_FACEBOOK_KEY = '2363106360397556'  # App ID
 SOCIAL_AUTH_FACEBOOK_SECRET = '90e8420ff05cbd2ad68d6cc6fd2ab4f4'  # Client Token
+
+SOCIAL_AUTH_GOOGLE_KEY = '119661575145-uoa0ti4rkbrenac4gh38jp4u6ljsth7q.apps.googleusercontent.com'
 
 REST_USE_JWT = True
 
-SITE_ID = 2
+SITE_ID = 1
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -219,21 +197,11 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Dropship CEO'
 ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'henrywilliam@gmail.com'
-# EMAIL_HOST_PASSWORD = 'Marketing1122'
-# EMAIL_PORT = 587
-
-# SES creds
-EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
-EMAIL_HOST_USER = 'AKIAJHHB7X2UXZC2BGMA'
-EMAIL_HOST_PASSWORD = 'AtnjYEtIKwKvCiH1oDt1p1Db/kf/fgwim3laZsfHowVC'
-DEFAULT_FROM_EMAIL = 'Dropship CEO<no-reply@dropship.ceo>'
-EMAIL_PORT = 465    # smtplib.SMTP uses port 25，smtplib.SMTP_SSL uses 465
-
-EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'henrywilliam@gmail.com'
+EMAIL_HOST_PASSWORD = 'Marketing1122'
+EMAIL_PORT = 587
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
@@ -289,23 +257,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 APPEND_SLASH = True
 
 TRIAL_DAYS = 7
-
-# live keys. Should be replaced with test keys when in need for testing
-STRIPE_PUBLIC_API_KEY = 'pk_live_sQP56HM0LUEb2SbI56gbEPm4'
-STRIPE_SECRET_API_KEY = 'sk_live_Fwl5dRrfmTgMSBfyrdGiZYRC'
-
-# stripe webhook secrets
-endpoint_secret = {
-    'payment_failed': '',
-    'payment_succeeded': '',
-    'invoice_created': '',
-    'subscription_deleted': 'whsec_qU1H4YYRba1ilvmzmZuoteu7gHscCZ8f',
-    'subscription_updated': ''
-}
-
-SHOPIFY_API_KEY = "0e9f4f4a3f4e0852ded420023d568851"
-SHOPIFY_API_SECRET = "6d7fab435136792b8bad5acdc8750a05"
-
 
 
 try:

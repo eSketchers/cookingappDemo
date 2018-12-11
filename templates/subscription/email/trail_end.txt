@@ -1,8 +1,0 @@
-{% extends 'email_template_base.txt'%}
-
-
-{% block email_content %}
-
-    Trial is about to end.
-
-{% endblock %}

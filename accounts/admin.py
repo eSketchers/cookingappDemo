@@ -16,9 +16,6 @@ from django.utils.http import urlsafe_base64_encode
 from accounts.serializers import CustomUserCreateSerializer
 from .models import User
 
-domain = "api.dropshipdynamo.com"
-site_name = "Ecom Engine"
-
 
 class UserAdmin(BaseUserAdmin):
 

@@ -23,14 +23,8 @@ from accounts import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^accounts/', include('allauth.urls')),
-
-    url(r'^', include('shopification.urls')),
-    url(r'^api/v1/', include('shopification.urls')),
-
     url(r'^api/v1/user/', include('accounts.urls')),
     url(r'^', include('django.contrib.auth.urls')),
-    url(r'^api/v1/core/', include('core.urls')),
-    url(r'^api/v1/', include('subscription.urls')),
     url(r'social-login/$', views.social_login, name='social_login'),
     url(r'accounts/reset-password-form/(?P<uidb64>[-:\w]+)/(?P<token>[-:\w]+)/$',
         views.reset_password_form, name='reset_password_form'),
