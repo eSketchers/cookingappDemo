@@ -1,7 +1,6 @@
 .idea/
 media/
 assets/
-migrations/
 __pycache__/
 dropshipping/settings_local.py
 *.pyc
