@@ -48,7 +48,7 @@ httplib2==0.11.3
 idna==2.6
 ipaddress==1.0.22
 itypes==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 jmespath==0.9.3
 l18n==2016.6.4
 lxml==4.2.3
