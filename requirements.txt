@@ -88,7 +88,7 @@ six==1.11.0
 stripe==2.11.0
 Unidecode==0.4.21
 uritemplate==3.0.0
-urllib3==1.22
+urllib3==1.26.5
 wagtail==2.1
 webencodings==0.5.1
 whitenoise==3.2
