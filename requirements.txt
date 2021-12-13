@@ -51,7 +51,7 @@ itypes==1.1.0
 Jinja2==2.10
 jmespath==0.9.3
 l18n==2016.6.4
-lxml==4.2.3
+lxml==4.6.5
 MarkupSafe==1.1.0
 maxminddb==1.4.1
 model-mommy==1.6.0
